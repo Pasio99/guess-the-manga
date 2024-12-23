@@ -4,54 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guess the Manga</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet"> <!-- Aggiungi font Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Poppins', sans-serif; /* Font moderno e leggibile */
-            background-color: #000000; /* Nero */
-            color: #ffffff; /* Testo bianco */
+            font-family: 'Poppins', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
             margin: 0;
-            padding: 60px 0 0 0; /* Aggiungi padding in cima per evitare sovrapposizioni */
+            padding: 60px 0 0 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Cambia justify-content per permettere lo scrolling */
+            justify-content: flex-start;
             height: 100vh;
-            overflow-y: auto; /* Rendi il contenuto scrollabile */
+            overflow-y: auto;
         }
 
         header {
-            background-color: #6200ea; /* Viola */
+            background-color: #6200ea;
             color: white;
-            padding: 10px; /* Riduci il padding */
+            padding: 10px;
             width: 100%;
             text-align: center;
-            position: fixed; /* Rendi l'header fisso */
-            top: 0; /* Posiziona l'header in cima alla pagina */
-            z-index: 1000; /* Assicurati che l'header sia sopra gli altri elementi */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Aggiungi ombra */
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         header h1 {
-            font-size: 24px; /* Riduci la dimensione del font */
-            margin: 0; /* Rimuovi il margine */
+            font-size: 24px;
+            margin: 0;
+            margin-right: 10px; /* Aggiungi margine a destra per separare il testo dall'immagine */
+        }
+
+        .history-link {
+            margin-left: 16px; /* Aggiungi margine a sinistra per avvicinare l'immagine al testo */
+        }
+
+        .history-link img {
+            width: 30px; /* Dimensione dell'immagine */
+            height: auto;
         }
 
         .game-container {
-            background: #333333; /* Grigio */
+            background: #333333;
             border-radius: 16px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
             width: 90%;
             max-width: 600px;
             text-align: center;
-            position: relative; /* Necessario per il posizionamento assoluto dell'indizio */
-            margin-top: 80px; /* Aggiungi margine superiore per creare distanza dall'header */
+            position: relative;
+            margin-top: 80px;
         }
 
         .panel {
             margin: 20px 0;
-            position: relative; /* Necessario per il posizionamento assoluto dell'indizio */
+            position: relative;
         }
 
         .level-indicator {
@@ -64,7 +77,7 @@
             max-width: 100%;
             height: auto;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Aggiungi ombra all'immagine */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         input {
@@ -74,33 +87,33 @@
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 8px;
-            background-color: #333333; /* Nero */
-            color: #fff; /* Testo bianco */
+            background-color: #333333;
+            color: #fff;
         }
 
         input::placeholder {
-            color: #fff; /* Colore del placeholder bianco */
+            color: #fff;
         }
 
         button {
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #6200ea; /* Viola */
+            background-color: #6200ea;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease; /* Aggiungi transizione */
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #3700b3; /* Viola scuro */
+            background-color: #3700b3;
         }
 
         .result {
-            margin-top: 10px; /* Riduci il margine superiore per spostare il testo più in alto */
+            margin-top: 10px;
             font-weight: bold;
-            color: orangered; /* Colore del testo rosso */
+            color: orangered;
         }
 
         .hint {
@@ -112,12 +125,12 @@
         .button-container {
             display: flex;
             justify-content: center;
-            gap: 10px; /* Spazio tra i pulsanti */
-            margin-top: 20px; /* Aggiungi spazio tra la barra di avanzamento e i pulsanti */
+            gap: 10px;
+            margin-top: 20px;
         }
 
         .button-container button {
-            flex: 1; /* Assicurati che i pulsanti abbiano la stessa larghezza */
+            flex: 1;
         }
 
         .hidden {
@@ -126,15 +139,15 @@
 
         .hint-overlay {
             position: absolute;
-            top: 10px; /* Posiziona l'indizio in alto */
-            left: 10px; /* Posiziona l'indizio a sinistra */
-            background-color: rgba(98, 0, 234, 0.8); /* Sfondo semi-trasparente viola */
+            top: 10px;
+            left: 10px;
+            background-color: rgba(98, 0, 234, 0.8);
             color: white;
             padding: 10px;
             border-radius: 8px;
             font-size: 14px;
-            max-width: 80%; /* Limita la larghezza massima */
-            z-index: 10; /* Assicurati che l'indizio sia sopra l'immagine */
+            max-width: 80%;
+            z-index: 10;
         }
 
         .progress-container {
@@ -143,7 +156,7 @@
             border-radius: 8px;
             overflow: hidden;
             margin-top: 10px;
-            position: relative; /* Necessario per posizionare le tacche */
+            position: relative;
         }
 
         .progress-bar {
@@ -165,6 +178,9 @@
 <body>
     <header>
         <h1>Guess the Manga</h1>
+        <a href="history.html" class="history-link">
+            <img src="https://github.com/username/repository-name/raw/main/immagini/Altro/statistics.png" alt="History">
+        </a>
     </header>
     <div class="game-container">
         <div class="level-indicator" id="level-indicator">Manga #1</div>
@@ -176,7 +192,6 @@
         
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
-            <!-- Tacche per la barra di avanzamento -->
             <div class="progress-tick" style="left: 25%;"></div>
             <div class="progress-tick" style="left: 50%;"></div>
             <div class="progress-tick" style="left: 75%;"></div>
@@ -184,7 +199,7 @@
 
         <div class="button-container">
             <button class="hidden" id="previous-button" onclick="previousPanel()">Previous Image</button>
-            <button onclick="checkAnswer()">Submit</button>
+            <button id="submit-button" onclick="checkAnswer()">Submit</button>
             <button class="hidden" id="next-button" onclick="nextPanel()">Next Image</button>
         </div>
         <div class="result" id="result"></div>
@@ -192,92 +207,208 @@
     </div>
 
     <script>
-        // Sample data
         const levels = [
             {
                 panels: [
-                    { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image1.png", answer: "Naruto", hint: "No hint" },
-                    { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image2Naruto.png", answer: "Naruto", hint: "Target: Shonen" },
-                    { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto3.png", answer: "Naruto", hint: "Ended, N° of Tome: 72, Chapters: 700" },
-                    { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto5.png", answer: "Naruto", hint: "I'm gonna become Hokage!" }
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/Naruto/image1.png", answer: "Naruto", hint: "No hint" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/Naruto/image2Naruto.png", answer: "Naruto", hint: "Target: Shonen" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/Naruto/Naruto3.png", answer: "Naruto", hint: "Ended, N° of Tome: 72, Chapters: 700" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/Naruto/Naruto4.png", answer: "Naruto", hint: "I'm gonna become Hokage!" }
                 ]
             },
             {
                 panels: [
-                    { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "One Piece", hint: "No hint" },
-                    { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "One Piece", hint: "Target: Shonen" },
-                    { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "One Piece", hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
-                    { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "One Piece", hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op1.png", answer: "One Piece", hint: "No hint" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op2.png", answer: "One Piece", hint: "Target: Shonen" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op3.png", answer: "One Piece", hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op4.png", answer: "One Piece", hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+                ]
+            },
+            {
+                panels: [
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op1.png", answer: "The bugle call", hint: "No hint" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op2.png", answer: "The bugle call", hint: "Target: Shonen" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op3.png", answer: "The bugle call", hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op4.png", answer: "The bugle call", hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+                ]
+            },
+            {
+                panels: [
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op1.png", answer: "prova", hint: "No hint" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op2.png", answer: "prova", hint: "Target: Shonen" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op3.png", answer: "prova", hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+                    { src: "https://github.com/username/repository-name/raw/main/immagini/OnePiece/Op4.png", answer: "prova", hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
                 ]
             }
         ];
 
-        let currentLevel = 0;
-        let currentPanel = 0;
-        let attempts = 0;
-        const maxAttempts = 4;
-        let hintVisible = false;
+    let currentLevel = 0;
+    let currentPanel = 0;
+    let attempts = 0;
+    const maxAttempts = 4;
+    let hintVisible = false;
+    let levelCompleted = false;
+    let maxPanelReached = 0;
+    let completedLevels = [];
 
-        function loadPanel() {
-            const panelImage = document.getElementById("manga-panel");
-            const hintOverlay = document.getElementById("hint-overlay");
-            const levelIndicator = document.getElementById("level-indicator");
-            const current = levels[currentLevel].panels[currentPanel];
+    // Carica lo stato del gioco da localStorage
+    function loadGameState() {
+        const savedLevel = localStorage.getItem('currentLevel');
+        const savedPanel = localStorage.getItem('currentPanel');
+        const savedAttempts = localStorage.getItem('attempts');
+        const savedLevelCompleted = localStorage.getItem('levelCompleted');
+        const savedMaxPanelReached = localStorage.getItem('maxPanelReached');
+        const savedCompletedLevels = localStorage.getItem('completedLevels');
 
-            panelImage.src = current.src;
-            levelIndicator.textContent = `Manga #${currentLevel + 1}`;
-            if (hintVisible) {
-                hintOverlay.textContent = current.hint;
-                hintOverlay.classList.remove("hidden");
-            } else {
-                hintOverlay.textContent = "";
-                hintOverlay.classList.add("hidden");
+        if (savedLevel !== null) currentLevel = parseInt(savedLevel);
+        if (savedPanel !== null) currentPanel = parseInt(savedPanel);
+        if (savedAttempts !== null) attempts = parseInt(savedAttempts);
+        if (savedLevelCompleted !== null) levelCompleted = JSON.parse(savedLevelCompleted);
+        if (savedMaxPanelReached !== null) maxPanelReached = parseInt(savedMaxPanelReached);
+        if (savedCompletedLevels !== null) completedLevels = JSON.parse(savedCompletedLevels);
+
+        if (attempts > 0 || levelCompleted) {
+            document.getElementById("previous-button").classList.remove("hidden");
+            document.getElementById("next-button").classList.remove("hidden");
+            document.getElementById("hint-button").classList.remove("hidden");
+        }
+
+        if (completedLevels.includes(currentLevel)) {
+            document.getElementById("submit-button").disabled = true;
+        }
+    }
+
+    // Salva lo stato del gioco in localStorage
+    function saveGameState() {
+        localStorage.setItem('currentLevel', currentLevel);
+        localStorage.setItem('currentPanel', currentPanel);
+        localStorage.setItem('attempts', attempts);
+        localStorage.setItem('levelCompleted', levelCompleted);
+        localStorage.setItem('maxPanelReached', maxPanelReached);
+        localStorage.setItem('completedLevels', JSON.stringify(completedLevels));
+    }
+
+    function loadPanel() {
+        const panelImage = document.getElementById("manga-panel");
+        const hintOverlay = document.getElementById("hint-overlay");
+        const levelIndicator = document.getElementById("level-indicator");
+        const current = levels[currentLevel].panels[currentPanel];
+
+        panelImage.src = current.src;
+        levelIndicator.textContent = `Manga #${currentLevel + 1}`;
+        if (hintVisible) {
+            hintOverlay.textContent = current.hint;
+            hintOverlay.classList.remove("hidden");
+        } else {
+            hintOverlay.textContent = "";
+            hintOverlay.classList.add("hidden");
+        }
+
+        updateProgressBar(currentPanel + 1, levels[currentLevel].panels.length);
+    }
+
+    function updateProgressBar(currentImageIndex, totalImages) {
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercentage = (currentImageIndex / totalImages) * 100;
+        progressBar.style.width = progressPercentage + '%';
+    }
+
+    function saveResult(status) {
+        const resultLog = localStorage.getItem("resultLog") || "[]";
+        const results = JSON.parse(resultLog);
+
+        if (!results[currentLevel]) {
+            results[currentLevel] = {
+                manga: levels[currentLevel].panels[0].answer,
+                status: status,
+                attempts: attempts
+            };
+        }
+
+        localStorage.setItem("resultLog", JSON.stringify(results));
+    }
+
+    function checkAnswer() {
+        if (completedLevels.includes(currentLevel)) {
+            return;
+        }
+
+        const userGuess = document.getElementById("user-guess").value.trim();
+        const result = document.getElementById("result");
+        const current = levels[currentLevel].panels[currentPanel];
+
+        if (userGuess.toLowerCase() === current.answer.toLowerCase()) {
+            result.textContent = "Correct!";
+            result.style.color = "green";
+            saveResult("Correct");
+
+            completedLevels.push(currentLevel);
+            currentLevel++;
+            if (currentLevel >= levels.length) {
+                result.textContent = "Congratulations! You've completed all levels!";
+                return;
             }
 
-            // Aggiorna la barra di avanzamento
-            updateProgressBar(currentPanel + 1, levels[currentLevel].panels.length);
-        }
+            currentPanel = 0;
+            attempts = 0;
+            levelCompleted = true;
+            maxPanelReached = 0;
 
-        function updateProgressBar(currentImageIndex, totalImages) {
-            const progressBar = document.getElementById('progress-bar');
-            const progressPercentage = (currentImageIndex / totalImages) * 100;
-            progressBar.style.width = progressPercentage + '%';
-        }
+            document.getElementById("previous-button").classList.add("hidden");
+            document.getElementById("next-button").classList.add("hidden");
+            document.getElementById("hint-button").classList.add("hidden");
+            document.getElementById("hint-overlay").classList.add("hidden");
+            hintVisible = false;
 
-        function saveResult(status) {
-            const resultLog = localStorage.getItem("resultLog") || "[]";
-            const results = JSON.parse(resultLog);
+            setTimeout(() => {
+                result.textContent = "";
+                document.getElementById("user-guess").value = "";
+                loadPanel();
+            }, 2000);
+        } else {
+            attempts++;
 
-            results.push({
-                manga: levels[currentLevel].panels[0].answer, // Manga name from the first panel
-                status: status
-            });
+            if (attempts < maxAttempts) {
+                result.textContent = "Wrong answer! Try again.";
+                result.style.color = "red";
 
-            localStorage.setItem("resultLog", JSON.stringify(results));
-        }
+                document.getElementById("previous-button").classList.remove("hidden");
+                document.getElementById("next-button").classList.remove("hidden");
+                document.getElementById("hint-button").classList.remove("hidden");
 
-        function checkAnswer() {
-            const userGuess = document.getElementById("user-guess").value.trim();
-            const result = document.getElementById("result");
-            const current = levels[currentLevel].panels[currentPanel];
+                currentPanel++;
+                if (currentPanel >= levels[currentLevel].panels.length) {
+                    currentPanel = levels[currentLevel].panels.length - 1;
+                }
 
-            if (userGuess.toLowerCase() === current.answer.toLowerCase()) {
-                result.textContent = "Correct!";
-                result.style.color = "green";
-                saveResult("Correct");
+                if (currentPanel > maxPanelReached) {
+                    maxPanelReached = currentPanel;
+                }
 
-                // Passa al prossimo livello
+                loadPanel();
+
+                setTimeout(() => {
+                    result.textContent = "";
+                    if (currentPanel === levels[currentLevel].panels.length - 1) {
+                        result.textContent = "Last guess!";
+                    }
+                }, 10000);
+            } else {
+                result.textContent = "Out of attempts! Moving to the next level.";
+                result.style.color = "red";
+                saveResult("Failed");
+
                 currentLevel++;
                 if (currentLevel >= levels.length) {
-                    result.textContent = "Congratulations! You've completed all levels!";
-                    result.style.color = "green";
+                    result.textContent = "Game Over! You've completed all levels.";
                     return;
                 }
 
                 currentPanel = 0;
                 attempts = 0;
+                levelCompleted = true;
+                maxPanelReached = 0;
 
-                // Nascondi i pulsanti per il nuovo livello
                 document.getElementById("previous-button").classList.add("hidden");
                 document.getElementById("next-button").classList.add("hidden");
                 document.getElementById("hint-button").classList.add("hidden");
@@ -289,88 +420,55 @@
                     document.getElementById("user-guess").value = "";
                     loadPanel();
                 }, 2000);
-            } else {
-                attempts++;
-
-                if (attempts < maxAttempts) {
-                    result.textContent = "Wrong answer! Try again.";
-                    result.style.color = "orangered";
-
-                    // Mostra i pulsanti dopo il primo errore
-                    document.getElementById("previous-button").classList.remove("hidden");
-                    document.getElementById("next-button").classList.remove("hidden");
-                    document.getElementById("hint-button").classList.remove("hidden");
-
-                    currentPanel++;
-                    if (currentPanel >= levels[currentLevel].panels.length) {
-                        currentPanel = levels[currentLevel].panels.length - 1; // Resta sull'ultimo pannello
-                    }
-
-                    loadPanel();
-
-                    // Nascondi il messaggio dopo 10 secondi
-                    setTimeout(() => {
-                        result.textContent = "";
-                        if (currentPanel === levels[currentLevel].panels.length - 1) {
-                            result.textContent = "Last try to guess!";
-                        }
-                    }, 8000);
-                } else {
-                    result.textContent = "Out of attempts! Moving to the next level.";
-                    result.style.color = "orangered";
-                    saveResult("Failed");
-
-                    // Passa al prossimo livello
-                    currentLevel++;
-                    if (currentLevel >= levels.length) {
-                        result.textContent = "Game Over! You've completed all levels.";
-                        result.style.color = "green";
-                        return;
-                    }
-
-                    currentPanel = 0;
-                    attempts = 0;
-
-                    // Nascondi i pulsanti per il nuovo livello
-                    document.getElementById("previous-button").classList.add("hidden");
-                    document.getElementById("next-button").classList.add("hidden");
-                    document.getElementById("hint-button").classList.add("hidden");
-                    document.getElementById("hint-overlay").classList.add("hidden");
-                    hintVisible = false;
-
-                    setTimeout(() => {
-                        result.textContent = "";
-                        document.getElementById("user-guess").value = "";
-                        loadPanel();
-                    }, 2000);
-                }
             }
         }
 
-        function showHint() {
-            const hintOverlay = document.getElementById("hint-overlay");
-            const current = levels[currentLevel].panels[currentPanel];
-            hintOverlay.textContent = current.hint;
-            hintOverlay.classList.remove("hidden");
-            hintVisible = true;
-        }
+        saveGameState();
+    }
 
-        function previousPanel() {
-            if (currentPanel > 0) {
-                currentPanel--;
-                loadPanel();
-            }
-        }
+    function showHint() {
+        const hintOverlay = document.getElementById("hint-overlay");
+        const current = levels[currentLevel].panels[currentPanel];
+        hintOverlay.textContent = current.hint;
+        hintOverlay.classList.remove("hidden");
+        hintVisible = true;
+    }
 
-        function nextPanel() {
-            if (currentPanel < attempts) {
-                currentPanel++;
-                loadPanel();
-            }
+    function previousPanel() {
+        if (currentPanel > 0) {
+            currentPanel--;
+            loadPanel();
         }
+    }
 
-        // Inizializza il primo pannello
+    function nextPanel() {
+        if (completedLevels.includes(currentLevel) || currentPanel < maxPanelReached) {
+            currentPanel++;
+            loadPanel();
+        }
+    }
+
+    function goToLevel(level) {
+        currentLevel = level;
+        currentPanel = 0;
+        attempts = 0;
+        hintVisible = false;
+        levelCompleted = true;
+        maxPanelReached = 0;
+        saveGameState();
         loadPanel();
+    }
+
+    loadGameState();
+
+    const navigateToLevel = localStorage.getItem('navigateToLevel');
+    if (navigateToLevel !== null) {
+        goToLevel(parseInt(navigateToLevel));
+        localStorage.removeItem('navigateToLevel');
+    } else {
+        loadPanel();
+    }
+    localStorage.setItem('totalLevels', levels.length);
     </script>
 </body>
 </html>
