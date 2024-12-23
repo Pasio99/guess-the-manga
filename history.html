@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Manga - Your Statistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 60px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        header {
+            background-color: #6200ea;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+            margin-left: 10px;
+        }
+
+        .home-link {
+            margin-right: 16px;
+        }
+
+        .home-link img {
+            width: 30px;
+            height: auto;
+        }
+
+        .history-container {
+            background: #333333;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background-color: #444444;
+            cursor: pointer;
+        }
+
+        .history-item.correct {
+            background-color: #4caf50;
+        }
+
+        .history-item.failed {
+            background-color: #f44336;
+        }
+
+        .history-item.not-played {
+            background-color: #808080;
+        }
+
+        .history-item span {
+            flex: 1;
+            text-align: center;
+        }
+
+        .history-item .level, .history-item .attempts {
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index2.html" class="home-link">
+            <img src="C:/Users/alecs/OneDrive/Desktop/immagini_sito/home.png" alt="Home">
+        </a>
+        <h1>Guess the Manga - Your Statistics</h1>
+    </header>
+    <div class="history-container" id="history-container">
+        <!-- Cronologia dei livelli verrà caricata qui -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const historyContainer = document.getElementById('history-container');
+            const resultLog = JSON.parse(localStorage.getItem('resultLog') || '[]');
+            const totalLevels = parseInt(localStorage.getItem('totalLevels'), 10) || 0;
+
+            // Genera l'elenco di tutti i livelli
+            for (let i = 0; i < totalLevels; i++) {
+                const historyItem = document.createElement('div');
+                historyItem.classList.add('history-item');
+
+                // Determina lo stato del livello (giocato o meno)
+                const levelResult = resultLog[i];
+                if (levelResult) {
+                    // Livello giocato
+                    historyItem.classList.add(levelResult.status.toLowerCase());
+
+                    const levelSpan = document.createElement('span');
+                    levelSpan.classList.add('level');
+                    levelSpan.textContent = `Level ${i + 1}`;
+                    levelSpan.addEventListener('click', () => navigateToLevel(i));
+
+                    const attemptsSpan = document.createElement('span');
+                    attemptsSpan.classList.add('attempts');
+                    attemptsSpan.textContent = `Attempts: ${levelResult.attempts}`;
+
+                    const statusSpan = document.createElement('span');
+                    statusSpan.textContent = levelResult.status;
+
+                    historyItem.appendChild(levelSpan);
+                    historyItem.appendChild(attemptsSpan);
+                    historyItem.appendChild(statusSpan);
+                } else {
+                    // Livello non giocato
+                    historyItem.classList.add('not-played');
+
+                    const levelSpan = document.createElement('span');
+                    levelSpan.classList.add('level');
+                    levelSpan.textContent = `Level ${i + 1}`;
+                    levelSpan.addEventListener('click', () => navigateToLevel(i));
+
+                    const attemptsSpan = document.createElement('span');
+                    attemptsSpan.classList.add('attempts');
+                    attemptsSpan.textContent = `Not played yet`;
+
+                    historyItem.appendChild(levelSpan);
+                    historyItem.appendChild(attemptsSpan);
+                }
+
+                historyContainer.appendChild(historyItem);
+            }
+        });
+
+        function navigateToLevel(level) {
+            localStorage.setItem('navigateToLevel', level);
+            window.location.href = 'index2.html';
+        }
+    </script>
+</body>
+</html>
