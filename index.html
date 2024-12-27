@@ -258,7 +258,7 @@
         const savedAttempts = localStorage.getItem('attempts');
         const savedLevelCompleted = localStorage.getItem('levelCompleted');
         const savedMaxPanelReached = localStorage.getItem('maxPanelReached');
-        const savedCompletedLevels = localStorage.getItem('completedLevels' || 'Failed');
+        const savedCompletedLevels = localStorage.getItem('completedLevels');
 
         if (savedLevel !== null) currentLevel = parseInt(savedLevel);
         if (savedPanel !== null) currentPanel = parseInt(savedPanel);
@@ -397,6 +397,7 @@
                 result.textContent = "Out of attempts! Moving to the next level.";
                 result.style.color = "red";
                 saveResult("Failed");
+                completedLevels.push(currentLevel);
 
                 currentLevel++;
                 if (currentLevel >= levels.length) {
