@@ -258,7 +258,7 @@
         const savedAttempts = localStorage.getItem('attempts');
         const savedLevelCompleted = localStorage.getItem('levelCompleted');
         const savedMaxPanelReached = localStorage.getItem('maxPanelReached');
-        const savedCompletedLevels = localStorage.getItem('completedLevels');
+        const savedCompletedLevels = localStorage.getItem('completedLevels' || 'Failed');
 
         if (savedLevel !== null) currentLevel = parseInt(savedLevel);
         if (savedPanel !== null) currentPanel = parseInt(savedPanel);
