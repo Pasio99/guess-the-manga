@@ -443,8 +443,10 @@
 
     function nextPanel() {
         if (completedLevels.includes(currentLevel) || currentPanel < maxPanelReached) {
-            currentPanel++;
-            loadPanel();
+            if (currentPanel < 3) { // Assuming there are 4 panels (0 to 3)
+                currentPanel++;
+                loadPanel();
+            }
         }
     }
 
