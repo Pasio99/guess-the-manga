@@ -58,19 +58,7 @@ function loadGameState() {
     if (savedMaxPanelReached !== null) maxPanelReached = parseInt(savedMaxPanelReached);
     if (savedCompletedLevels !== null) completedLevels = JSON.parse(savedCompletedLevels);
 
-    if (attempts > 0 || levelCompleted) {
-        document.getElementById("previous-button").classList.remove("hidden");
-        document.getElementById("next-button").classList.remove("hidden");
-        document.getElementById("hint-button").classList.remove("hidden");
-    }
-
-    if (completedLevels.includes(currentLevel)) {
-        document.getElementById("submit-button").classList.add("hidden");
-        document.getElementById("previous-button").classList.remove("hidden");
-        document.getElementById("next-button").classList.remove("hidden");
-    } else {
-        document.getElementById("submit-button").classList.remove("hidden");
-    }
+    updateButtonVisibility();
 }
 
 // Salva lo stato del gioco in localStorage
@@ -100,6 +88,7 @@ function loadPanel() {
     }
 
     updateProgressBar(currentPanel + 1, levels[currentLevel].panels.length);
+    updateButtonVisibility();
 }
 
 function updateProgressBar(currentImageIndex, totalImages) {
@@ -149,11 +138,7 @@ function checkAnswer() {
         levelCompleted = true;
         maxPanelReached = 0;
 
-        document.getElementById("previous-button").classList.remove("hidden");
-        document.getElementById("next-button").classList.remove("hidden");
-        document.getElementById("hint-button").classList.remove("hidden");
         document.getElementById("hint-overlay").classList.add("hidden");
-        document.getElementById("submit-button").classList.add("hidden");
         hintVisible = false;
 
         setTimeout(() => {
@@ -167,10 +152,6 @@ function checkAnswer() {
         if (attempts < maxAttempts) {
             result.textContent = "Wrong answer! Try again.";
             result.style.color = "red";
-
-            document.getElementById("previous-button").classList.remove("hidden");
-            document.getElementById("next-button").classList.remove("hidden");
-            document.getElementById("hint-button").classList.remove("hidden");
 
             currentPanel++;
             if (currentPanel >= levels[currentLevel].panels.length) {
@@ -206,11 +187,7 @@ function checkAnswer() {
             levelCompleted = true;
             maxPanelReached = 0;
 
-            document.getElementById("previous-button").classList.remove("hidden");
-            document.getElementById("next-button").classList.remove("hidden");
-            document.getElementById("hint-button").classList.remove("hidden");
             document.getElementById("hint-overlay").classList.add("hidden");
-            document.getElementById("submit-button").classList.add("hidden");
             hintVisible = false;
 
             setTimeout(() => {
@@ -257,6 +234,24 @@ function goToLevel(level) {
     maxPanelReached = 0;
     saveGameState();
     loadPanel();
+}
+
+function updateButtonVisibility() {
+    if (completedLevels.includes(currentLevel)) {
+        document.getElementById("submit-button").classList.add("hidden");
+        document.getElementById("previous-button").classList.remove("hidden");
+        document.getElementById("next-button").classList.remove("hidden");
+    } else {
+        document.getElementById("submit-button").classList.remove("hidden");
+        document.getElementById("previous-button").classList.add("hidden");
+        document.getElementById("next-button").classList.add("hidden");
+    }
+
+    if (attempts > 0 || levelCompleted) {
+        document.getElementById("previous-button").classList.remove("hidden");
+        document.getElementById("next-button").classList.remove("hidden");
+        document.getElementById("hint-button").classList.remove("hidden");
+    }
 }
 
 loadGameState();
