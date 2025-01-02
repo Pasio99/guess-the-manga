@@ -27,7 +27,7 @@ const levels = [
         panels: [
             { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "prova", hint: "No hint" },
             { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "prova", hint: "Target: Shonen" },
-            { src: "https://github.com/Pasio99/guess-the-manga/main/immagini/OnePiece/Op3.png", answer: "prova", hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "prova", hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
             { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "prova", hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
         ]
     }
