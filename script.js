@@ -66,6 +66,8 @@ function loadGameState() {
 
     if (completedLevels.includes(currentLevel)) {
         document.getElementById("submit-button").classList.add("hidden");
+        document.getElementById("previous-button").classList.remove("hidden");
+        document.getElementById("next-button").classList.remove("hidden");
     } else {
         document.getElementById("submit-button").classList.remove("hidden");
     }
