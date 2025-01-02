@@ -42,6 +42,11 @@ let levelCompleted = false;
 let maxPanelReached = 0;
 let completedLevels = [];
 
+function navigateToStatistics() {
+    saveGameState();
+    window.location.href = "history.html";
+}
+
 // Carica lo stato del gioco da localStorage
 function loadGameState() {
     const savedLevel = localStorage.getItem('currentLevel');
@@ -153,7 +158,7 @@ function checkAnswer() {
             result.textContent = "Wrong answer! Try again.";
             result.style.color = "red";
 
-            currentPanel = maxPanelReached + 1;
+            currentPanel++;
             if (currentPanel >= levels[currentLevel].panels.length) {
                 currentPanel = levels[currentLevel].panels.length - 1;
             }
