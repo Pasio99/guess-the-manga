@@ -153,7 +153,7 @@ function checkAnswer() {
             result.textContent = "Wrong answer! Try again.";
             result.style.color = "red";
 
-            currentPanel++;
+            currentPanel = maxPanelReached + 1;
             if (currentPanel >= levels[currentLevel].panels.length) {
                 currentPanel = levels[currentLevel].panels.length - 1;
             }
