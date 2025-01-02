@@ -65,9 +65,9 @@ function loadGameState() {
     }
 
     if (completedLevels.includes(currentLevel)) {
-        document.getElementById("submit-button").disabled = true;
+        document.getElementById("submit-button").classList.add("hidden");
     } else {
-        document.getElementById("submit-button").disabled = false;
+        document.getElementById("submit-button").classList.remove("hidden");
     }
 }
 
@@ -147,10 +147,11 @@ function checkAnswer() {
         levelCompleted = true;
         maxPanelReached = 0;
 
-        document.getElementById("previous-button").classList.add("hidden");
-        document.getElementById("next-button").classList.add("hidden");
-        document.getElementById("hint-button").classList.add("hidden");
+        document.getElementById("previous-button").classList.remove("hidden");
+        document.getElementById("next-button").classList.remove("hidden");
+        document.getElementById("hint-button").classList.remove("hidden");
         document.getElementById("hint-overlay").classList.add("hidden");
+        document.getElementById("submit-button").classList.add("hidden");
         hintVisible = false;
 
         setTimeout(() => {
@@ -203,10 +204,11 @@ function checkAnswer() {
             levelCompleted = true;
             maxPanelReached = 0;
 
-            document.getElementById("previous-button").classList.add("hidden");
-            document.getElementById("next-button").classList.add("hidden");
-            document.getElementById("hint-button").classList.add("hidden");
+            document.getElementById("previous-button").classList.remove("hidden");
+            document.getElementById("next-button").classList.remove("hidden");
+            document.getElementById("hint-button").classList.remove("hidden");
             document.getElementById("hint-overlay").classList.add("hidden");
+            document.getElementById("submit-button").classList.add("hidden");
             hintVisible = false;
 
             setTimeout(() => {
