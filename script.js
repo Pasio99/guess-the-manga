@@ -33,33 +33,52 @@ const levels = [
     }
 ];
 
-let gameState = {
-    levels: {},
-    currentLevel: 0,
-    totalAttempts: 0,
-    totalCompleted: 0
-};
+let currentLevel = 0;
+let currentPanel = 0;
+let attempts = 0;
+const maxAttempts = 4;
+let hintVisible = false;
+let levelCompleted = false;
+let maxPanelReached = 0;
+let completedLevels = [];
 
+// Carica lo stato del gioco da localStorage
 function loadGameState() {
-    const savedState = localStorage.getItem('gameState');
-    if (savedState) {
-        gameState = JSON.parse(savedState);
-    }
+    const savedLevel = localStorage.getItem('currentLevel');
+    const savedPanel = localStorage.getItem('currentPanel');
+    const savedAttempts = localStorage.getItem('attempts');
+    const savedLevelCompleted = localStorage.getItem('levelCompleted');
+    const savedMaxPanelReached = localStorage.getItem('maxPanelReached');
+    const savedCompletedLevels = localStorage.getItem('completedLevels');
+
+    if (savedLevel !== null) currentLevel = parseInt(savedLevel);
+    if (savedPanel !== null) currentPanel = parseInt(savedPanel);
+    if (savedAttempts !== null) attempts = parseInt(savedAttempts);
+    if (savedLevelCompleted !== null) levelCompleted = JSON.parse(savedLevelCompleted);
+    if (savedMaxPanelReached !== null) maxPanelReached = parseInt(savedMaxPanelReached);
+    if (savedCompletedLevels !== null) completedLevels = JSON.parse(savedCompletedLevels);
+
     updateButtonVisibility();
 }
 
+// Salva lo stato del gioco in localStorage
 function saveGameState() {
-    localStorage.setItem('gameState', JSON.stringify(gameState));
+    localStorage.setItem('currentLevel', currentLevel);
+    localStorage.setItem('currentPanel', currentPanel);
+    localStorage.setItem('attempts', attempts);
+    localStorage.setItem('levelCompleted', levelCompleted);
+    localStorage.setItem('maxPanelReached', maxPanelReached);
+    localStorage.setItem('completedLevels', JSON.stringify(completedLevels));
 }
 
 function loadPanel() {
     const panelImage = document.getElementById("manga-panel");
     const hintOverlay = document.getElementById("hint-overlay");
     const levelIndicator = document.getElementById("level-indicator");
-    const current = levels[gameState.currentLevel].panels[currentPanel];
+    const current = levels[currentLevel].panels[currentPanel];
 
     panelImage.src = current.src;
-    levelIndicator.textContent = `Manga #${gameState.currentLevel + 1}`;
+    levelIndicator.textContent = `Manga #${currentLevel + 1}`;
     if (hintVisible) {
         hintOverlay.textContent = current.hint;
         hintOverlay.classList.remove("hidden");
@@ -68,7 +87,7 @@ function loadPanel() {
         hintOverlay.classList.add("hidden");
     }
 
-    updateProgressBar(currentPanel + 1, levels[gameState.currentLevel].panels.length);
+    updateProgressBar(currentPanel + 1, levels[currentLevel].panels.length);
     updateButtonVisibility();
 }
 
@@ -79,40 +98,37 @@ function updateProgressBar(currentImageIndex, totalImages) {
 }
 
 function saveResult(status) {
-    if (!gameState.levels[gameState.currentLevel]) {
-        gameState.levels[gameState.currentLevel] = {
-            completed: false,
-            attempts: 0,
-            maxPanelReached: 0
+    const resultLog = localStorage.getItem("resultLog") || "[]";
+    const results = JSON.parse(resultLog);
+
+    if (!results[currentLevel]) {
+        results[currentLevel] = {
+            manga: levels[currentLevel].panels[0].answer,
+            status: status,
+            attempts: attempts
         };
     }
 
-    gameState.levels[gameState.currentLevel].status = status;
-    gameState.levels[gameState.currentLevel].attempts = attempts;
-    if (status === "Correct") {
-        gameState.levels[gameState.currentLevel].completed = true;
-        gameState.totalCompleted++;
-    }
-
-    saveGameState();
+    localStorage.setItem("resultLog", JSON.stringify(results));
 }
 
 function checkAnswer() {
-    if (gameState.levels[gameState.currentLevel]?.completed) {
+    if (completedLevels.includes(currentLevel)) {
         return;
     }
 
     const userGuess = document.getElementById("user-guess").value.trim();
     const result = document.getElementById("result");
-    const current = levels[gameState.currentLevel].panels[currentPanel];
+    const current = levels[currentLevel].panels[currentPanel];
 
     if (userGuess.toLowerCase() === current.answer.toLowerCase()) {
         result.textContent = "Correct!";
         result.style.color = "green";
         saveResult("Correct");
 
-        gameState.currentLevel++;
-        if (gameState.currentLevel >= levels.length) {
+        completedLevels.push(currentLevel);
+        currentLevel++;
+        if (currentLevel >= levels.length) {
             result.textContent = "Congratulations! You've completed all levels!";
             return;
         }
@@ -132,15 +148,14 @@ function checkAnswer() {
         }, 2000);
     } else {
         attempts++;
-        gameState.totalAttempts++;
 
         if (attempts < maxAttempts) {
             result.textContent = "Wrong answer! Try again.";
             result.style.color = "red";
 
             currentPanel = maxPanelReached + 1;
-            if (currentPanel >= levels[gameState.currentLevel].panels.length) {
-                currentPanel = levels[gameState.currentLevel].panels.length - 1;
+            if (currentPanel >= levels[currentLevel].panels.length) {
+                currentPanel = levels[currentLevel].panels.length - 1;
             }
 
             if (currentPanel > maxPanelReached) {
@@ -151,7 +166,7 @@ function checkAnswer() {
 
             setTimeout(() => {
                 result.textContent = "";
-                if (currentPanel === levels[gameState.currentLevel].panels.length - 1) {
+                if (currentPanel === levels[currentLevel].panels.length - 1) {
                     result.textContent = "Last guess!";
                 }
             }, 10000);
@@ -159,9 +174,10 @@ function checkAnswer() {
             result.textContent = "Out of attempts! Moving to the next level.";
             result.style.color = "red";
             saveResult("Failed");
+            completedLevels.push(currentLevel);
 
-            gameState.currentLevel++;
-            if (gameState.currentLevel >= levels.length) {
+            currentLevel++;
+            if (currentLevel >= levels.length) {
                 result.textContent = "Game Over! You've completed all levels.";
                 return;
             }
@@ -187,7 +203,7 @@ function checkAnswer() {
 
 function showHint() {
     const hintOverlay = document.getElementById("hint-overlay");
-    const current = levels[gameState.currentLevel].panels[currentPanel];
+    const current = levels[currentLevel].panels[currentPanel];
     hintOverlay.textContent = current.hint;
     hintOverlay.classList.remove("hidden");
     hintVisible = true;
@@ -201,7 +217,7 @@ function previousPanel() {
 }
 
 function nextPanel() {
-    if (gameState.levels[gameState.currentLevel]?.completed || currentPanel < maxPanelReached) {
+    if (completedLevels.includes(currentLevel) || currentPanel < maxPanelReached) {
         if (currentPanel < 3) { // Assuming there are 4 panels (0 to 3)
             currentPanel++;
             loadPanel();
@@ -210,7 +226,7 @@ function nextPanel() {
 }
 
 function goToLevel(level) {
-    gameState.currentLevel = level;
+    currentLevel = level;
     currentPanel = 0;
     attempts = 0;
     hintVisible = false;
@@ -221,23 +237,25 @@ function goToLevel(level) {
 }
 
 function resetGame() {
-    localStorage.removeItem('gameState');
-    gameState = {
-        levels: {},
-        currentLevel: 0,
-        totalAttempts: 0,
-        totalCompleted: 0
-    };
+    localStorage.removeItem('currentLevel');
+    localStorage.removeItem('currentPanel');
+    localStorage.removeItem('attempts');
+    localStorage.removeItem('levelCompleted');
+    localStorage.removeItem('maxPanelReached');
+    localStorage.removeItem('completedLevels');
+    localStorage.removeItem('resultLog');
+    currentLevel = 0;
     currentPanel = 0;
     attempts = 0;
     hintVisible = false;
     levelCompleted = false;
     maxPanelReached = 0;
+    completedLevels = [];
     loadPanel();
 }
 
 function updateButtonVisibility() {
-    if (gameState.levels[gameState.currentLevel]?.completed) {
+    if (completedLevels.includes(currentLevel)) {
         document.getElementById("submit-button").classList.add("hidden");
         document.getElementById("previous-button").classList.remove("hidden");
         document.getElementById("next-button").classList.remove("hidden");
