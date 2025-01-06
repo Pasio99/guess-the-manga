@@ -241,6 +241,24 @@ function goToLevel(level) {
     loadPanel();
 }
 
+function resetGame() {
+    localStorage.removeItem('currentLevel');
+    localStorage.removeItem('currentPanel');
+    localStorage.removeItem('attempts');
+    localStorage.removeItem('levelCompleted');
+    localStorage.removeItem('maxPanelReached');
+    localStorage.removeItem('completedLevels');
+    localStorage.removeItem('resultLog');
+    currentLevel = 0;
+    currentPanel = 0;
+    attempts = 0;
+    hintVisible = false;
+    levelCompleted = false;
+    maxPanelReached = 0;
+    completedLevels = [];
+    loadPanel();
+}
+
 function updateButtonVisibility() {
     if (completedLevels.includes(currentLevel)) {
         document.getElementById("submit-button").classList.add("hidden");
