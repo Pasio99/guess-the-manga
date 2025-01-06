@@ -109,7 +109,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const historyContainer = document.getElementById('history-container');
-            const gameState = JSON.parse(localStorage.getItem('gameState') || '{}');
+            const resultLog = JSON.parse(localStorage.getItem('resultLog') || '[]');
             const totalLevels = parseInt(localStorage.getItem('totalLevels'), 10) || 0;
 
             // Genera l'elenco di tutti i livelli
@@ -118,10 +118,10 @@
                 historyItem.classList.add('history-item');
 
                 // Determina lo stato del livello (giocato o meno)
-                const levelResult = gameState.levels[i];
+                const levelResult = resultLog[i];
                 if (levelResult) {
                     // Livello giocato
-                    historyItem.classList.add(levelResult.completed ? 'correct' : 'failed');
+                    historyItem.classList.add(levelResult.status.toLowerCase());
 
                     const levelSpan = document.createElement('span');
                     levelSpan.classList.add('level');
@@ -133,7 +133,7 @@
                     attemptsSpan.textContent = `Attempts: ${levelResult.attempts}`;
 
                     const statusSpan = document.createElement('span');
-                    statusSpan.textContent = levelResult.completed ? 'Correct' : 'Failed';
+                    statusSpan.textContent = levelResult.status;
 
                     historyItem.appendChild(levelSpan);
                     historyItem.appendChild(attemptsSpan);
