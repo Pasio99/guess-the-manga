@@ -44,31 +44,31 @@ let completedLevels = [];
 
 // Carica lo stato del gioco da localStorage
 function loadGameState() {
-    const savedLevel = localStorage.getItem('currentLevel');
-    const savedPanel = localStorage.getItem('currentPanel');
-    const savedAttempts = localStorage.getItem('attempts');
-    const savedLevelCompleted = localStorage.getItem('levelCompleted');
-    const savedMaxPanelReached = localStorage.getItem('maxPanelReached');
-    const savedCompletedLevels = localStorage.getItem('completedLevels');
-
-    if (savedLevel !== null) currentLevel = parseInt(savedLevel);
-    if (savedPanel !== null) currentPanel = parseInt(savedPanel);
-    if (savedAttempts !== null) attempts = parseInt(savedAttempts);
-    if (savedLevelCompleted !== null) levelCompleted = JSON.parse(savedLevelCompleted);
-    if (savedMaxPanelReached !== null) maxPanelReached = parseInt(savedMaxPanelReached);
-    if (savedCompletedLevels !== null) completedLevels = JSON.parse(savedCompletedLevels);
+    const savedState = localStorage.getItem('gameState');
+    if (savedState) {
+        const state = JSON.parse(savedState);
+        currentLevel = state.currentLevel;
+        currentPanel = state.currentPanel;
+        attempts = state.attempts;
+        levelCompleted = state.levelCompleted;
+        maxPanelReached = state.maxPanelReached;
+        completedLevels = state.completedLevels;
+    }
 
     updateButtonVisibility();
 }
 
 // Salva lo stato del gioco in localStorage
 function saveGameState() {
-    localStorage.setItem('currentLevel', currentLevel);
-    localStorage.setItem('currentPanel', currentPanel);
-    localStorage.setItem('attempts', attempts);
-    localStorage.setItem('levelCompleted', levelCompleted);
-    localStorage.setItem('maxPanelReached', maxPanelReached);
-    localStorage.setItem('completedLevels', JSON.stringify(completedLevels));
+    const state = {
+        currentLevel,
+        currentPanel,
+        attempts,
+        levelCompleted,
+        maxPanelReached,
+        completedLevels
+    };
+    localStorage.setItem('gameState', JSON.stringify(state));
 }
 
 function loadPanel() {
@@ -237,12 +237,7 @@ function goToLevel(level) {
 }
 
 function resetGame() {
-    localStorage.removeItem('currentLevel');
-    localStorage.removeItem('currentPanel');
-    localStorage.removeItem('attempts');
-    localStorage.removeItem('levelCompleted');
-    localStorage.removeItem('maxPanelReached');
-    localStorage.removeItem('completedLevels');
+    localStorage.removeItem('gameState');
     localStorage.removeItem('resultLog');
     currentLevel = 0;
     currentPanel = 0;
