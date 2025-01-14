@@ -10,6 +10,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.JWT_SECRET || 'supersecretkey';
 
+app.use(express.static('FrontEnd'));
+
 // Middleware
 app.use(bodyParser.json());
 
