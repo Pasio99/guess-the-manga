@@ -42,6 +42,24 @@ body {
             height: auto;
         }
 
+        .header-links {
+             display: flex;
+             align-items: center;
+             justify-content: flex-end;
+             gap: 16px; /* Spazio tra i link */
+         }
+
+         .login-link {
+             color: white;
+             text-decoration: none;
+             font-weight: bold;
+             margin-right: 16px; /* Spazio tra il link di login e il bordo destro */
+          }
+
+         .login-link:hover {
+             text-decoration: underline;
+          }
+
         .game-container {
             background: #333333;
             border-radius: 16px;
