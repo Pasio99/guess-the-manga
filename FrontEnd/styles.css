@@ -46,8 +46,8 @@ header h1 {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-right: 20px; /* Right margin for header links */
-
+    margin-right: 20px; /* Margine destro per i link */
+}
 
 .login-link {
     color: white;
