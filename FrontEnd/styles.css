@@ -53,6 +53,7 @@ body {
              color: white;
              text-decoration: none;
              font-weight: bold; /* setta la scritta a dx */
+             margin-left: auto;
           }
 
          .login-link:hover {
