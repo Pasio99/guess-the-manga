@@ -24,13 +24,13 @@ header {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 }
 
 header h1 {
     font-size: 24px;
     margin: 0;
-    margin-right: 10px; /* Aggiungi margine a destra per separare il testo dall'immagine */
+    margin-right: 20px; /* Aggiungi margine a destra per separare il testo dall'immagine */
 }
 
 .history-link {
