@@ -274,7 +274,7 @@ function updateButtonVisibility() {
 
 function navigateToStatistics() {
     saveGameState();
-    window.location.href = "history.html";
+    window.location.href = "FrontEnd/history.html";
 }
 
 loadGameState();
