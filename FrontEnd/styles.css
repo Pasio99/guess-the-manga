@@ -53,7 +53,7 @@ body {
              color: white;
              text-decoration: none;
              font-weight: bold;
-             margin-right: 16px; /* Spazio tra il link di login e il bordo destro */
+             margin-left: 200px; /* setta la scritta a dx */
           }
 
          .login-link:hover {
