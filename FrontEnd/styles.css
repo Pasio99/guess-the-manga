@@ -44,8 +44,7 @@ header h1 {
 
 .header-links {
     font-size: 24px;
-    margin: 0;
-    margin-left: 200px; /* Margine destro per i link */
+    margin: 0; /* Margine destro per i link */
 }
 
 .login-link {
