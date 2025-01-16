@@ -30,6 +30,7 @@ header {
 header h1 {
     font-size: 24px;
     margin: 0;
+    margin-right: 10px;
 }
 
 .history-link {
@@ -39,23 +40,6 @@ header h1 {
 .history-link img {
     width: 30px; /* Dimensione dell'immagine */
     height: auto;
-}
-
-.header-links {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-right: 20px; /* Margine destro per i link */
-}
-
-.login-link {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.login-link:hover {
-    text-decoration: underline;
 }
 
 .game-container {
