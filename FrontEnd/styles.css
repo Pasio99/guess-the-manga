@@ -30,11 +30,17 @@ header {
 header h1 {
     font-size: 24px;
     margin: 0;
-    margin-right: 10px;
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center correction */
 }
 
 .history-link {
-    margin-left: 16px; /* Aggiungi margine a sinistra per avvicinare l'immagine al testo */
+    margin-left: 16px;
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
 }
 
 .history-link img {
