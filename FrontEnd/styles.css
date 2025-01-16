@@ -15,7 +15,7 @@ body {
 header {
     background-color: #6200ea;
     color: white;
-    padding: 10px;
+    padding: 20px;
     width: 100%;
     text-align: center;
     position: fixed;
@@ -30,17 +30,12 @@ header {
 header h1 {
     font-size: 24px;
     margin: 0;
-    position: absolute;
-    top: 10px; /* Adjust as needed */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Center correction */
+    display: inline-block; /* Center correction */
 }
 
 .history-link {
-    margin-left: 16px;
-    position: absolute;
-    top: 10px; /* Adjust as needed */
-    right: 10px; /* Adjust as needed */
+    margin-left: 20px; /* Adjust as needed to position the image next to the text */
+    display: inline-block; /* Adjust as needed */
 }
 
 .history-link img {
