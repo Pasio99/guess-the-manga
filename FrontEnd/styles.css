@@ -52,6 +52,7 @@ header h1 {
     color: white;
     text-decoration: none;
     font-weight: bold;
+    margin-right: -200px;
 }
 
 .login-link:hover {
