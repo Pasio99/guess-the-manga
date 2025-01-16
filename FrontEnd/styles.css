@@ -15,7 +15,7 @@ body {
 header {
     background-color: #6200ea;
     color: white;
-    padding: 17px;
+    padding: 10px 20px; 
     width: 100%;
     text-align: center;
     position: fixed;
@@ -25,7 +25,6 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    /*position: relative;*/
 }
 
 header h1 {
@@ -53,9 +52,9 @@ header h1 {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    font-size: 24px;
+    font-size: 20px;
     position: absolute;
-    right: 200px;
+    right: 250px;
 }
 
 .login-link:hover {
