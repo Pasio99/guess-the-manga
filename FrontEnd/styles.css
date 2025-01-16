@@ -25,16 +25,17 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 header h1 {
     font-size: 24px;
     margin: 0;
-    display: inline-block; /* Center correction */
+    /* display: inline-block; /* Center correction */
 }
 
 .history-link {
-    margin-left: 20px; /* Adjust as needed to position the image next to the text */
+    margin-left: 15px; /* Adjust as needed to position the image next to the text */
     display: inline-block; /* Adjust as needed */
 }
 
@@ -52,7 +53,8 @@ header h1 {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    margin-right: -200px;
+    position: absolute;
+    right: 20px;
 }
 
 .login-link:hover {
