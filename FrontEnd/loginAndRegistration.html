@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login and Registration</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Aggiungi la libreria di Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
     <h1>Register</h1>
@@ -30,48 +32,58 @@
     <p id="loginResult"></p>
 
     <script>
-    document.getElementById('registerForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const username = document.getElementById('username').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        // Configura Supabase
+        const SUPABASE_URL = 'https://<tuo-progetto>.supabase.co'; // Sostituisci con il tuo URL Supabase
+        const SUPABASE_KEY = 'la_tua_chiave_api'; // Sostituisci con la chiave trovata in Supabase → Settings → API → "anon key"
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        try {
-            const response = await fetch('http://localhost:3000/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, email, password }),
-            });
+        // Gestione della registrazione
+        document.getElementById('registerForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-            const result = await response.json();
-            document.getElementById('registerResult').textContent = result.message || result.error;
-        } catch (error) {
-            document.getElementById('registerResult').textContent = 'Errore durante la registrazione.';
-        }
-    });
+            try {
+                const { user, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                });
 
-    document.getElementById('loginForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const username = document.getElementById('loginUsername').value;
-        const password = document.getElementById('loginPassword').value;
+                if (error) throw error;
 
-        try {
-            const response = await fetch('http://localhost:3000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
+                // Aggiungi l'utente al database (se hai una tabella dedicata, ad esempio "users")
+                const { data, error: insertError } = await supabase
+                    .from('users') // Sostituisci con il nome della tua tabella
+                    .insert([{ username, email }]);
 
-            const result = await response.json();
-            document.getElementById('loginResult').textContent = result.message || result.error;
-        } catch (error) {
-            document.getElementById('loginResult').textContent = 'Errore durante il login.';
-        }
-    });
-</script>
+                if (insertError) throw insertError;
+
+                document.getElementById('registerResult').textContent = 'Registrazione avvenuta con successo!';
+            } catch (error) {
+                document.getElementById('registerResult').textContent = 'Errore durante la registrazione: ' + error.message;
+            }
+        });
+
+        // Gestione del login
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const { session, error } = await supabase.auth.signIn({
+                    email,
+                    password,
+                });
+
+                if (error) throw error;
+
+                document.getElementById('loginResult').textContent = 'Login effettuato con successo!';
+            } catch (error) {
+                document.getElementById('loginResult').textContent = 'Errore durante il login: ' + error.message;
+            }
+        });
+    </script>
 </body>
 </html>
