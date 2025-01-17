@@ -30,48 +30,48 @@
     <p id="loginResult"></p>
 
     <script>
-        document.getElementById('registerForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+    document.getElementById('registerForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-            try {
-                const response = await fetch('http://localhost:3000/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, email, password }),
-                });
+        try {
+            const response = await fetch('http://<TUO_BACKEND_SERVER_URL>/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, email, password }),
+            });
 
-                const result = await response.json();
-                document.getElementById('registerResult').textContent = result.message || result.error;
-            } catch (error) {
-                document.getElementById('registerResult').textContent = 'Errore durante la registrazione.';
-            }
-        });
+            const result = await response.json();
+            document.getElementById('registerResult').textContent = result.message || result.error;
+        } catch (error) {
+            document.getElementById('registerResult').textContent = 'Errore durante la registrazione.';
+        }
+    });
 
-        document.getElementById('loginForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
 
-            try {
-                const response = await fetch('http://localhost:3000/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
+        try {
+            const response = await fetch('http://<TUO_BACKEND_SERVER_URL>/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-                const result = await response.json();
-                document.getElementById('loginResult').textContent = result.message || result.error;
-            } catch (error) {
-                document.getElementById('loginResult').textContent = 'Errore durante il login.';
-            }
-        });
-    </script>
+            const result = await response.json();
+            document.getElementById('loginResult').textContent = result.message || result.error;
+        } catch (error) {
+            document.getElementById('loginResult').textContent = 'Errore durante il login.';
+        }
+    });
+</script>
 </body>
 </html>
