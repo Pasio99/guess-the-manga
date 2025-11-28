@@ -12,203 +12,229 @@
   body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: #c8a2c8; /* glicine */
+    background: #c8a2c8;
     color: #4a004a;
     overflow-x: hidden;
     text-align: center;
-    padding: 15px;
+    padding: 18px;
     box-sizing: border-box;
+    opacity: 0;
+    animation: pageFadeIn 1.8s ease forwards;
+  }
+
+  @keyframes pageFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   h1 {
-    margin-top: 10px;
-    font-size: 1.9em;
+    margin-top: 5px;
+    font-size: 1.8em;
     font-weight: 600;
     line-height: 1.2em;
   }
 
   #timer {
-    margin-top: 10px;
-    font-size: 1.3em;
+    margin-top: 8px;
+    font-size: 1.25em;
     font-weight: 600;
   }
 
-  /* FOTO SOTTO AL TIMER */
+  /* FOTO CON CORNICE SOFFICE */
   #fixedPhoto {
-    margin-top: 20px;
-    width: 90%;
-    max-width: 320px;
-    border-radius: 16px;
-    animation: floatShadow 3s ease-in-out infinite;
-    position: relative;
-    z-index: 3;
+    margin-top: 18px;
+    width: 92%;
+    max-width: 330px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.35); /* cornice leggerissima */
+    box-shadow: 0 0 10px rgba(0,0,0,0.25);
+    animation: photoAppear 1.8s ease forwards, floatShadow 3s ease-in-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes photoAppear {
+    0% { opacity: 0; transform: scale(0.96); }
+    100% { opacity: 1; transform: scale(1); }
   }
 
   @keyframes floatShadow {
     0% { box-shadow: 0 0 10px #00000040; transform: translateY(0); }
-    50% { box-shadow: 0 0 18px #00000060; transform: translateY(-5px); }
+    50% { box-shadow: 0 0 18px #00000060; transform: translateY(-4px); }
     100% { box-shadow: 0 0 10px #00000040; transform: translateY(0); }
   }
 
-  /* FRASE IMPORTANTE */
+  /* FRASE PRINCIPALE (tipo scrittura) */
   .main-phrase {
-    font-size: 1.1em;
-    margin-top: 15px;
-    padding: 0 10px;
+    font-size: 1.05em;
+    margin-top: 14px;
+    padding: 0 12px;
+    line-height: 1.32em;
     font-style: italic;
-    line-height: 1.35em;
     font-weight: 400;
-    position: relative;
-    z-index: 3;
+    opacity: 1;
+    white-space: pre-wrap;
+    min-height: 70px;
   }
 
-  /* FRASI ROTANTI (IN GRASSETTO) */
+  /* FRASI ROTANTI */
   .phrases {
-    margin-top: 18px;
+    margin-top: 16px;
     font-size: 1.05em;
     font-style: italic;
-    font-weight: 600; /* GRASSETTO */
-    position: relative;
-    z-index: 3;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 1s ease;
   }
 
-  /* Pulsante "Ti Amo" */
+  /* Pulsante TI AMO */
   #loveButton {
-    margin-top: 25px;
-    padding: 12px 25px;
+    margin-top: 22px;
+    padding: 14px 28px;
     border: none;
-    border-radius: 15px;
-    font-size: 1.2em;
+    border-radius: 16px;
+    font-size: 1.25em;
     background-color: #7a1fa2;
     color: white;
     cursor: pointer;
-    transition: 0.3s;
-    z-index: 10;
-    position: relative;
+    transition: 0.25s;
     font-weight: 600;
+    animation: pulse 2.3s infinite ease-in-out;
   }
 
-  #loveButton:hover {
-    background-color: #9c27b0;
-    transform: scale(1.05);
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.045); }
+    100% { transform: scale(1); }
   }
 
-  /* CUORI ANIMATI */
+  /* Cuori */
   .heart {
     position: absolute;
-    font-size: 30px;
-    opacity: 0.4;
+    font-size: 26px;
+    opacity: 0.32;
     animation: float 8s infinite ease-in-out;
-    z-index: 1;
     pointer-events: none;
   }
 
   @keyframes float {
     0% { transform: translateY(0) translateX(0); }
-    50% { transform: translateY(-30px) translateX(15px); }
+    50% { transform: translateY(-28px) translateX(12px); }
     100% { transform: translateY(0) translateX(0); }
   }
 
-  /* Miglioramenti mobile */
+  /* Ottimizzazioni MOBILE (Android friendly) */
   @media (max-width: 480px) {
-    h1 { font-size: 1.7em; }
-    #timer { font-size: 1.25em; }
-    .main-phrase { font-size: 1em; }
-    .phrases { font-size: 1em; }
-    #loveButton { font-size: 1.1em; padding: 10px 22px; }
-    .heart { font-size: 26px; }
+    h1 { font-size: 1.6em; margin-top: 0; }
+    #timer { font-size: 1.1em; }
+    .main-phrase { font-size: 0.95em; }
+    .phrases { font-size: 0.95em; }
+    #loveButton { font-size: 1.15em; padding: 12px 24px; }
+    .heart { font-size: 22px; }
+    body { padding: 14px; }
   }
+
 </style>
 </head>
 
 <body>
 
-<!-- AUDIO DI SOTTOFONDO -->
+<!-- AUDIO -->
 <audio id="bgMusic" autoplay loop>
-  <source src="https://github.com/Pasio99/guess-the-manga/blob/main/AlessioDenise/musica/Edsheeran_-_thinking_out_loud_(mp3.pm).mp3" type="audio/mpeg">
+  <source src="https://raw.githubusercontent.com/Pasio99/guess-the-manga/main/AlessioDenise/musica/Edsheeran_-_thinking_out_loud_(mp3.pm).mp3" type="audio/mpeg">
 </audio>
 
-<h1>💖 Alessio e Denise, da quanto tempo ci amiamo: 💖</h1> 
+<h1>💖 Alessio e Denise, da quanto tempo ci amiamo: 💖</h1>
 
 <div id="timer"></div>
 
-<img id="fixedPhoto" src="https://raw.githubusercontent.com/Pasio99/guess-the-manga/main/immagini/photo_2025-11-26_22-50-39.jpg" alt="Noi">
+<img id="fixedPhoto" src="https://raw.githubusercontent.com/Pasio99/guess-the-manga/main/immagini/photo_2025-11-26_22-50-39.jpg">
 
-<div class="main-phrase">
-  Ci siamo baciati per la prima volta il 18 ottobre,<br>
-  ti ho chiesto di diventare la mia ragazza il 25 ottobre 2025,<br>
-  ma ci siamo innamorati molto prima 💜🧡.
-</div>
+<div class="main-phrase" id="typewriter"></div>
 
 <div class="phrases" id="phraseBox"></div>
 
 <button id="loveButton">Ti Amo ❤️</button>
 
 <script>
-  /* TIMER */
-  function updateTimer() {
-    const startDate = new Date("2025-10-25T10:20:00");
-    const now = new Date();
-    const diff = now - startDate;
+/* TIMER */
+function updateTimer() {
+  const startDate = new Date("2025-10-25T10:20:00");
+  const now = new Date();
+  const diff = now - startDate;
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
 
-    document.getElementById("timer").innerHTML =
-      days + " giorni, " + hours + " ore, " +
-      minutes + " minuti e " + seconds + " secondi";
+  document.getElementById("timer").innerHTML =
+    days + " giorni, " + hours + " ore, " +
+    minutes + " minuti e " + seconds + " secondi";
+}
+setInterval(updateTimer, 1000);
+updateTimer();
+
+/* MACCHINA DA SCRIVERE */
+const mainPhrase =
+  "Ci siamo baciati per la prima volta il 18 ottobre,\nti ho chiesto di diventare la mia ragazza il 25 ottobre 2025,\nma ci siamo innamorati molto prima 💜🧡.";
+
+let i = 0;
+function typeWriter() {
+  if (i < mainPhrase.length) {
+    document.getElementById("typewriter").innerHTML += mainPhrase.charAt(i);
+    i++;
+    setTimeout(typeWriter, 38);
   }
+}
+typeWriter();
 
-  setInterval(updateTimer, 1000);
-  updateTimer();
+/* FRASI ROTANTI */
+const phrases = [
+  "Denise, mi hai fatto capire cos'è l'amore.",
+  "Tu sei la mia casa.",
+  "Rendi il mio mondo meraviglioso ogni giorno, semplicemente esistendo.",
+  "Il mio posto preferito è tra le tue braccia.",
+  "Se immagino l'infinito e poi penso a quanto ti amo... beh, l'amore supera l'infinito."
+];
 
+let phraseIndex = 0;
 
-  /* FRASI ROTANTI */
-  const phrases = [
-    "Denise mi hai fatto capire cos'è l'amore", 
-    "Tu sei la mia casa.",
-    "Rendi il mio mondo meraviglioso ogni giorno, semplicemente esistendo" 
-    "Il mio posto preferito è tra le tue braccia.",
-    "Se immagino l'infinito e poi penso a quanto ti amo...beh l'amore supera l'infinito" 
-  ];
+function rotatePhrases() {
+  const box = document.getElementById("phraseBox");
+  box.style.opacity = 0;
 
-  let phraseIndex = 0;
-
-  function rotatePhrases() {
-    document.getElementById("phraseBox").innerHTML = phrases[phraseIndex];
+  setTimeout(() => {
+    box.innerHTML = phrases[phraseIndex];
+    box.style.opacity = 1;
     phraseIndex = (phraseIndex + 1) % phrases.length;
+  }, 300);
+}
+rotatePhrases();
+setInterval(rotatePhrases, 4000);
+
+/* CUORI DI SFONDO */
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.classList.add("heart");
+
+  const colors = ["💜", "🧡"];
+  heart.innerText = colors[Math.floor(Math.random() * colors.length)];
+
+  heart.style.left = Math.random() * window.innerWidth + "px";
+  heart.style.top = Math.random() * window.innerHeight + "px";
+  heart.style.animationDuration = (5 + Math.random() * 4) + "s";
+
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 9000);
+}
+setInterval(createHeart, 1500);
+
+/* Pulsante TI AMO */
+document.getElementById("loveButton").addEventListener("click", () => {
+  for (let i = 0; i < 12; i++) {
+    setTimeout(createHeart, i * 120);
   }
-
-  rotatePhrases();
-  setInterval(rotatePhrases, 4000);
-
-
-  /* CUORI DI SFONDO */
-  function createHeart() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-
-    const colors = ["💜", "🧡"];
-    heart.innerText = colors[Math.floor(Math.random() * colors.length)];
-
-    heart.style.left = Math.random() * window.innerWidth + "px";
-    heart.style.top = Math.random() * window.innerHeight + "px";
-    heart.style.animationDuration = (5 + Math.random() * 5) + "s";
-
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 9000);
-  }
-
-  setInterval(createHeart, 1400);
-
-  /* Pulsante TI AMO */
-  document.getElementById("loveButton").addEventListener("click", () => {
-    for (let i = 0; i < 10; i++) {
-      setTimeout(createHeart, i * 120);
-    }
-  });
+});
 </script>
 
 </body>
