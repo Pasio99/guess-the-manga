@@ -2,93 +2,90 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Noi ❤️</title>
+
+<!-- GOOGLE FONT: POPPINS -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
   body {
     margin: 0;
-    font-family: 'Helvetica', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background: #c8a2c8; /* glicine */
     color: #4a004a;
     overflow-x: hidden;
     text-align: center;
+    padding: 15px;
+    box-sizing: border-box;
   }
 
   h1 {
-    margin-top: 25px;
-    font-size: 2.4em;
+    margin-top: 10px;
+    font-size: 1.9em;
+    font-weight: 600;
+    line-height: 1.2em;
   }
 
   #timer {
     margin-top: 10px;
-    font-size: 1.8em;
-    font-weight: bold;
+    font-size: 1.3em;
+    font-weight: 600;
   }
 
   /* FOTO SOTTO AL TIMER */
   #fixedPhoto {
-    margin-top: 25px;
-    width: 330px;
-    max-width: 85%;
-    border-radius: 20px;
+    margin-top: 20px;
+    width: 90%;
+    max-width: 320px;
+    border-radius: 16px;
     animation: floatShadow 3s ease-in-out infinite;
     position: relative;
     z-index: 3;
   }
 
-  /* Ombra animata */
   @keyframes floatShadow {
-    0% { box-shadow: 0 0 15px #00000050; transform: translateY(0); }
-    50% { box-shadow: 0 0 25px #00000070; transform: translateY(-6px); }
-    100% { box-shadow: 0 0 15px #00000050; transform: translateY(0); }
+    0% { box-shadow: 0 0 10px #00000040; transform: translateY(0); }
+    50% { box-shadow: 0 0 18px #00000060; transform: translateY(-5px); }
+    100% { box-shadow: 0 0 10px #00000040; transform: translateY(0); }
   }
 
   /* FRASE IMPORTANTE */
   .main-phrase {
-    font-size: 1.3em;
-    margin-top: 25px;
-    padding: 0 20px;
+    font-size: 1.1em;
+    margin-top: 15px;
+    padding: 0 10px;
     font-style: italic;
+    line-height: 1.35em;
+    font-weight: 400;
     position: relative;
     z-index: 3;
   }
 
-  /* FRASI ROTANTI */
+  /* FRASI ROTANTI (IN GRASSETTO) */
   .phrases {
-    margin-top: 20px;
-    font-size: 1.2em;
+    margin-top: 18px;
+    font-size: 1.05em;
     font-style: italic;
+    font-weight: 600; /* GRASSETTO */
     position: relative;
     z-index: 3;
-  }
-
-  /* CUORI ANIMATI */
-  .heart {
-    position: absolute;
-    font-size: 40px;
-    opacity: 0.5;
-    animation: float 8s infinite ease-in-out;
-    z-index: 1;
-  }
-
-  @keyframes float {
-    0% { transform: translateY(0) translateX(0); }
-    50% { transform: translateY(-40px) translateX(20px); }
-    100% { transform: translateY(0) translateX(0); }
   }
 
   /* Pulsante "Ti Amo" */
   #loveButton {
-    margin-top: 30px;
-    padding: 14px 28px;
+    margin-top: 25px;
+    padding: 12px 25px;
     border: none;
     border-radius: 15px;
-    font-size: 1.3em;
+    font-size: 1.2em;
     background-color: #7a1fa2;
     color: white;
     cursor: pointer;
     transition: 0.3s;
     z-index: 10;
     position: relative;
+    font-weight: 600;
   }
 
   #loveButton:hover {
@@ -96,41 +93,55 @@
     transform: scale(1.05);
   }
 
-  /* MOBILE VERSION */
-  @media (max-width: 600px) {
-    h1 { font-size: 1.9em; }
-    #timer { font-size: 1.4em; }
-    .main-phrase { font-size: 1.1em; }
-    .phrases { font-size: 1.1em; }
-    #loveButton { font-size: 1.2em; }
+  /* CUORI ANIMATI */
+  .heart {
+    position: absolute;
+    font-size: 30px;
+    opacity: 0.4;
+    animation: float 8s infinite ease-in-out;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-30px) translateX(15px); }
+    100% { transform: translateY(0) translateX(0); }
+  }
+
+  /* Miglioramenti mobile */
+  @media (max-width: 480px) {
+    h1 { font-size: 1.7em; }
+    #timer { font-size: 1.25em; }
+    .main-phrase { font-size: 1em; }
+    .phrases { font-size: 1em; }
+    #loveButton { font-size: 1.1em; padding: 10px 22px; }
+    .heart { font-size: 26px; }
   }
 </style>
 </head>
+
 <body>
 
-<!-- AUDIO DI SOTTOFONDO (MODIFICA QUI IL LINK) -->
+<!-- AUDIO DI SOTTOFONDO -->
 <audio id="bgMusic" autoplay loop>
-  <source src="URL_DEL_TUO_FILE_MP3" type="audio/mpeg">
+  <source src="https://github.com/Pasio99/guess-the-manga/blob/main/AlessioDenise/musica/Edsheeran_-_thinking_out_loud_(mp3.pm).mp3" type="audio/mpeg">
 </audio>
 
-<h1>💖 Alessio e Denise, da quanto tempo ci amiamo: 💖</h1>
+<h1>💖 Alessio e Denise, da quanto tempo ci amiamo: 💖</h1> 
 
 <div id="timer"></div>
 
-<!-- FOTO FISSA -->
 <img id="fixedPhoto" src="https://raw.githubusercontent.com/Pasio99/guess-the-manga/main/immagini/photo_2025-11-26_22-50-39.jpg" alt="Noi">
 
-<!-- FRASE IMPORTANTE -->
 <div class="main-phrase">
   Ci siamo baciati per la prima volta il 18 ottobre,<br>
   ti ho chiesto di diventare la mia ragazza il 25 ottobre 2025,<br>
   ma ci siamo innamorati molto prima 💜🧡.
 </div>
 
-<!-- FRASE ROTANTE -->
 <div class="phrases" id="phraseBox"></div>
 
-<!-- Pulsante TI AMO -->
 <button id="loveButton">Ti Amo ❤️</button>
 
 <script>
@@ -146,10 +157,8 @@
     const seconds = Math.floor((diff / 1000) % 60);
 
     document.getElementById("timer").innerHTML =
-      days + " giorni, " +
-      hours + " ore, " +
-      minutes + " minuti e " +
-      seconds + " secondi";
+      days + " giorni, " + hours + " ore, " +
+      minutes + " minuti e " + seconds + " secondi";
   }
 
   setInterval(updateTimer, 1000);
@@ -158,11 +167,11 @@
 
   /* FRASI ROTANTI */
   const phrases = [
-    "Mi hai fatto capire cos'è l'amore",
+    "Denise mi hai fatto capire cos'è l'amore", 
     "Tu sei la mia casa.",
+    "Rendi il mio mondo meraviglioso ogni giorno, semplicemente esistendo" 
     "Il mio posto preferito è tra le tue braccia.",
-    "Con te, anche un secondo diventa un ricordo.",
-    "Ti amo più di quanto riesca a dire."
+    "Se immagino l'infinito e poi penso a quanto ti amo...beh l'amore supera l'infinito" 
   ];
 
   let phraseIndex = 0;
@@ -176,7 +185,7 @@
   setInterval(rotatePhrases, 4000);
 
 
-  /* CUORI ANIMATI CONTINUI */
+  /* CUORI DI SFONDO */
   function createHeart() {
     const heart = document.createElement("div");
     heart.classList.add("heart");
@@ -186,23 +195,20 @@
 
     heart.style.left = Math.random() * window.innerWidth + "px";
     heart.style.top = Math.random() * window.innerHeight + "px";
-    heart.style.animationDuration = (6 + Math.random() * 4) + "s";
+    heart.style.animationDuration = (5 + Math.random() * 5) + "s";
 
     document.body.appendChild(heart);
-
-    setTimeout(() => { heart.remove(); }, 10000);
+    setTimeout(() => heart.remove(), 9000);
   }
 
-  setInterval(createHeart, 1200);
+  setInterval(createHeart, 1400);
 
-
-  /* Pulsante "TI AMO" → genera molti cuori */
+  /* Pulsante TI AMO */
   document.getElementById("loveButton").addEventListener("click", () => {
-    for (let i = 0; i < 12; i++) {
-      setTimeout(createHeart, i * 100);
+    for (let i = 0; i < 10; i++) {
+      setTimeout(createHeart, i * 120);
     }
   });
-
 </script>
 
 </body>
