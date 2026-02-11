@@ -80,10 +80,11 @@ function resolveInitialMode() {
     return (m === "view" || m === "play") ? m : "play";
 }
 
-function isLevelFailedInStorage(levelId) {
+function isLevelLockedToView(levelId) {
     const state = window.GTMStorage?.load?.();
     const lvl = state?.levels?.[String(levelId)];
-    return !!(lvl && lvl.played && !lvl.solved);
+    // locked = qualsiasi livello già giocato (Failed o Solved)
+    return !!(lvl && lvl.played);
 }
 
 function setLevel(levelId) {
@@ -97,8 +98,8 @@ function setLevel(levelId) {
     // Modalità richiesta (di default play)
     gameMode = resolveInitialMode();
 
-    // Regola definitiva: se un livello è Failed, è sempre view-only
-    if (isLevelFailedInStorage(currentLevelId)) {
+    // Regola definitiva: se un livello è già stato giocato (Solved o Failed), è sempre view-only
+    if (isLevelLockedToView(currentLevelId)) {
         gameMode = "view";
     }
 
@@ -307,3 +308,4 @@ localStorage.setItem("totalLevels", levels.length);
 
 currentLevelId = resolveInitialLevelId();
 setLevel(currentLevelId);
+
