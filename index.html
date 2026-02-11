@@ -15,14 +15,17 @@
         </a>
         <a href="FrontEnd/loginAndRegistration.html" class="login-link">Sign in/Sign up</a>
     </header>
+
     <div class="game-container">
         <div class="level-indicator" id="level-indicator">Manga #1</div>
+
         <div class="panel">
             <img src="placeholder.jpg" alt="Manga Panel" id="manga-panel">
             <div class="hint-overlay hidden" id="hint-overlay"></div>
         </div>
+
         <input type="text" id="user-guess" placeholder="Enter your guess here...">
-        
+
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
             <div class="progress-tick" style="left: 25%;"></div>
@@ -36,9 +39,13 @@
             <button class="hidden" id="next-button" onclick="nextPanel()">Next Image</button>
             <button id="reset-button" onclick="resetGame()">Reset Game</button>
         </div>
+
         <div class="result" id="result"></div>
         <button class="hidden" id="hint-button" onclick="showHint()">Show Hint</button>
     </div>
+
+    <!-- nuovo: storage -->
+    <script src="FrontEnd/storage.js"></script>
     <script src="FrontEnd/script.js"></script>
 </body>
 </html>
