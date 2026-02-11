@@ -34,9 +34,8 @@ let hintVisible = false;
 let maxPanelReached = 0;    // quante immagini hai “sbloccato” via tentativi
 let levelFinished = false;  // finito (correct o failed)
 
-// nuovo: modalità partita
 // play = gameplay normale
-// view = solo visione (usata per livelli Failed: non si possono trasformare in Solved)
+// view = solo visione (usata per livelli già giocati)
 let gameMode = "play";
 
 function clampLevel(id) {
@@ -61,7 +60,7 @@ function resolveInitialLevelId() {
     const q = params.get("level");
     if (q !== null) {
         const n = parseInt(q, 10);
-        // accettiamo sia 0-based sia 1-based: se utente passa 1, interpretiamo come level 1 (1-based)
+        // accettiamo sia 0-based sia 1-based
         if (!Number.isNaN(n)) {
             if (n >= 1 && n <= levels.length) return clampLevel(n - 1);
             return clampLevel(n);
@@ -98,14 +97,14 @@ function setLevel(levelId) {
     // Modalità richiesta (di default play)
     gameMode = resolveInitialMode();
 
-    // Regola definitiva: se un livello è già stato giocato (Solved o Failed), è sempre view-only
+    // Regola definitiva: se un livello è già stato giocato, è sempre view-only
     if (isLevelLockedToView(currentLevelId)) {
         gameMode = "view";
     }
 
     // In view: sblocca tutte le immagini e blocca il submit
     if (gameMode === "view") {
-        levelFinished = true; // così submit sparisce e non conteggiamo tentativi
+        levelFinished = true;
         maxPanelReached = levels[currentLevelId].panels.length - 1;
     }
 
@@ -157,7 +156,6 @@ function finishLevel(status) {
 function checkAnswer() {
     // view-only: niente submit
     if (gameMode === "view") return;
-
     if (levelFinished) return;
 
     const input = document.getElementById("user-guess");
@@ -177,8 +175,15 @@ function checkAnswer() {
         setTimeout(() => {
             result.textContent = "";
             input.value = "";
-            loadPanel();
-        }, 1200);
+
+            // Vai automaticamente al livello successivo (se esiste)
+            if (currentLevelId < levels.length - 1) {
+                setLevel(currentLevelId + 1);
+            } else {
+                // Ultimo livello completato: vai alla history
+                navigateToStatistics();
+            }
+        }, 900);
 
         return;
     }
@@ -188,7 +193,7 @@ function checkAnswer() {
         result.textContent = "Wrong answer! Try again.";
         result.style.color = "red";
 
-        // sblocca immagine successiva (fino a max 3)
+        // sblocca immagine successiva
         const next = Math.min(maxPanelReached + 1, levels[currentLevelId].panels.length - 1);
         currentPanel = next;
         if (currentPanel > maxPanelReached) maxPanelReached = currentPanel;
@@ -232,8 +237,6 @@ function previousPanel() {
 }
 
 function nextPanel() {
-    // puoi andare avanti solo fino a quello che hai sbloccato,
-    // oppure fino alla fine se il livello è finito (o in view-only)
     const limit = levelFinished ? (levels[currentLevelId].panels.length - 1) : maxPanelReached;
     if (currentPanel < limit) {
         currentPanel++;
@@ -241,11 +244,9 @@ function nextPanel() {
     }
 }
 
+// (il bottone è stato rimosso da index.html, puoi lasciare questa funzione o eliminarla)
 function resetGame() {
-    // reset completo (incl. export/import state)
     window.GTMStorage?.resetAll?.();
-
-    // reset runtime
     currentLevelId = 0;
     currentPanel = 0;
     attemptsMade = 0;
@@ -253,7 +254,6 @@ function resetGame() {
     maxPanelReached = 0;
     levelFinished = false;
     gameMode = "play";
-
     loadPanel();
 }
 
@@ -264,7 +264,6 @@ function updateButtonVisibility() {
     const hintBtn = document.getElementById("hint-button");
     const input = document.getElementById("user-guess");
 
-    // prev/next visibili se hai almeno 1 tentativo o hint o fine livello
     const canNavigate = attemptsMade > 0 || hintVisible || levelFinished || maxPanelReached > 0;
 
     if (canNavigate) {
@@ -277,9 +276,7 @@ function updateButtonVisibility() {
         hintBtn.classList.add("hidden");
     }
 
-    // gestione input + submit
     if (gameMode === "view") {
-        // view-only: niente submit e input disabilitato
         submitBtn.classList.add("hidden");
         if (input) {
             input.disabled = true;
@@ -292,7 +289,6 @@ function updateButtonVisibility() {
             input.placeholder = "Enter your guess here...";
         }
 
-        // submit sparisce se livello finito
         if (levelFinished) submitBtn.classList.add("hidden");
         else submitBtn.classList.remove("hidden");
     }
@@ -308,4 +304,3 @@ localStorage.setItem("totalLevels", levels.length);
 
 currentLevelId = resolveInitialLevelId();
 setLevel(currentLevelId);
-
