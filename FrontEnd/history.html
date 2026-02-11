@@ -161,7 +161,7 @@
           localStorage.setItem('navigateToLevel', level);
           localStorage.setItem('navigateMode', mode || 'play'); // play | view
           window.location.href = "../index.html";
-          }
+        }
 
         function downloadText(filename, text) {
             const blob = new Blob([text], { type: "application/json;charset=utf-8" });
@@ -177,13 +177,15 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const historyContainer = document.getElementById('history-container');
-            const totalLevels = parseInt(localStorage.getItem('totalLevels'), 10) || 0;
 
-            const state = window.GTMStorage.load();
+            const state = window.GTMStorage.load(); // <-- spostato QUI
+
+            const totalLevels = parseInt(localStorage.getItem('totalLevels'), 10) || 0;
+            const safeTotal = totalLevels > 0 ? totalLevels : Object.keys(state.levels).length;
 
             // RENDER LISTA LIVELLI (sempre cliccabili)
             historyContainer.innerHTML = "";
-            for (let i = 0; i < totalLevels; i++) {
+            for (let i = 0; i < safeTotal; i++) {
                 const lvl = state.levels[String(i)] || null;
 
                 const item = document.createElement('div');
@@ -224,7 +226,7 @@
                 const isFailed = (lvl && lvl.played && !lvl.solved); // played ma non solved => failed
                 const mode = isFailed ? "view" : "play";
                 item.addEventListener('click', () => navigateToLevel(i, mode));
-                
+
                 historyContainer.appendChild(item);
             }
 
@@ -260,4 +262,3 @@
     </script>
 </body>
 </html>
-
