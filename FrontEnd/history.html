@@ -56,10 +56,36 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
             width: 90%;
-            max-width: 600px;
+            max-width: 700px;
             text-align: center;
             position: relative;
             margin-top: 80px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .toolbar button {
+            background: #6200ea;
+            color: #fff;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .toolbar button.secondary {
+            background: #444;
+        }
+
+        .toolbar button:hover {
+            opacity: 0.9;
         }
 
         .history-item {
@@ -71,98 +97,163 @@
             border-radius: 8px;
             background-color: #444444;
             cursor: pointer;
+            gap: 10px;
         }
 
-        .history-item.correct {
-            background-color: #4caf50;
+        .history-item:hover {
+            background-color: #555555;
         }
 
-        .history-item.failed {
-            background-color: #f44336;
-        }
-
-        .history-item.not-played {
-            background-color: #808080;
-        }
-
-        .history-item span {
+        .history-item .level {
+            font-weight: 700;
+            text-align: left;
             flex: 1;
-            text-align: center;
         }
 
-        .history-item .level, .history-item .attempts {
-            width: 50%;
+        .history-item .attempts {
+            opacity: 0.85;
+            white-space: nowrap;
+        }
+
+        .history-item .status {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .correct { border-left: 6px solid #1db954; }
+        .failed { border-left: 6px solid #ff4d4d; }
+        .not-played { border-left: 6px solid #888; }
+
+        .hint {
+            opacity: 0.8;
+            font-size: 12px;
+            margin-top: 6px;
         }
     </style>
 </head>
 <body>
     <header>
-        <a href="../index.html" class="home-link">
+        <a href="../index.html" class="home-link" aria-label="Home">
             <img src="https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Altro/home.png" alt="Home">
         </a>
-        <h1>Guess the Manga - Your Statistics</h1>
+        <h1>Your Statistics</h1>
     </header>
-    <div class="history-container" id="history-container">
-        <!-- Cronologia dei livelli verrà caricata qui -->
+
+    <div class="history-container">
+        <div class="toolbar">
+            <button id="export-btn">Export progress (JSON)</button>
+            <button id="import-btn" class="secondary">Import progress (JSON)</button>
+            <input id="import-file" type="file" accept="application/json" style="display:none;">
+        </div>
+
+        <div class="hint">
+            Tip: you can click any level to start from there.
+        </div>
+
+        <div id="history-container"></div>
     </div>
 
+    <!-- nuovo: storage -->
+    <script src="storage.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const historyContainer = document.getElementById('history-container');
-            const resultLog = JSON.parse(localStorage.getItem('resultLog') || '[]');
-            const totalLevels = parseInt(localStorage.getItem('totalLevels'), 10) || 0;
-
-            // Genera l'elenco di tutti i livelli
-            for (let i = 0; i < totalLevels; i++) {
-                const historyItem = document.createElement('div');
-                historyItem.classList.add('history-item');
-
-                // Determina lo stato del livello (giocato o meno)
-                const levelResult = resultLog[i];
-                if (levelResult) {
-                    // Livello giocato
-                    historyItem.classList.add(levelResult.status.toLowerCase());
-
-                    const levelSpan = document.createElement('span');
-                    levelSpan.classList.add('level');
-                    levelSpan.textContent = `Level ${i + 1}`;
-                    levelSpan.addEventListener('click', () => navigateToLevel(i));
-
-                    const attemptsSpan = document.createElement('span');
-                    attemptsSpan.classList.add('attempts');
-                    attemptsSpan.textContent = `Attempts: ${levelResult.attempts}`;
-
-                    const statusSpan = document.createElement('span');
-                    statusSpan.textContent = levelResult.status;
-
-                    historyItem.appendChild(levelSpan);
-                    historyItem.appendChild(attemptsSpan);
-                    historyItem.appendChild(statusSpan);
-                } else {
-                    // Livello non giocato
-                    historyItem.classList.add('not-played');
-
-                    const levelSpan = document.createElement('span');
-                    levelSpan.classList.add('level');
-                    levelSpan.textContent = `Level ${i + 1}`;
-                    levelSpan.addEventListener('click', () => navigateToLevel(i));
-
-                    const attemptsSpan = document.createElement('span');
-                    attemptsSpan.classList.add('attempts');
-                    attemptsSpan.textContent = `Not played yet`;
-
-                    historyItem.appendChild(levelSpan);
-                    historyItem.appendChild(attemptsSpan);
-                }
-
-                historyContainer.appendChild(historyItem);
-            }
-        });
-
         function navigateToLevel(level) {
             localStorage.setItem('navigateToLevel', level);
             window.location.href = "../index.html";
         }
+
+        function downloadText(filename, text) {
+            const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const historyContainer = document.getElementById('history-container');
+            const totalLevels = parseInt(localStorage.getItem('totalLevels'), 10) || 0;
+
+            const state = window.GTMStorage.load();
+
+            // RENDER LISTA LIVELLI (sempre cliccabili)
+            historyContainer.innerHTML = "";
+            for (let i = 0; i < totalLevels; i++) {
+                const lvl = state.levels[String(i)] || null;
+
+                const item = document.createElement('div');
+                item.classList.add('history-item');
+
+                let css = "not-played";
+                let statusText = "Not played";
+                let attemptsText = "—";
+
+                if (lvl && lvl.solved) {
+                    css = "correct";
+                    statusText = "Solved";
+                    attemptsText = (typeof lvl.attemptsToSolve === "number") ? `Solved in: ${lvl.attemptsToSolve}` : "Solved";
+                } else if (lvl && lvl.played) {
+                    css = "failed";
+                    statusText = "Failed";
+                    attemptsText = (typeof lvl.lastAttempts === "number") ? `Attempts: ${lvl.lastAttempts}` : "Attempts: —";
+                }
+
+                item.classList.add(css);
+
+                const levelSpan = document.createElement('span');
+                levelSpan.classList.add('level');
+                levelSpan.textContent = `Level ${i + 1}`;
+
+                const attemptsSpan = document.createElement('span');
+                attemptsSpan.classList.add('attempts');
+                attemptsSpan.textContent = attemptsText;
+
+                const statusSpan = document.createElement('span');
+                statusSpan.classList.add('status');
+                statusSpan.textContent = statusText;
+
+                item.appendChild(levelSpan);
+                item.appendChild(attemptsSpan);
+                item.appendChild(statusSpan);
+
+                item.addEventListener('click', () => navigateToLevel(i));
+
+                historyContainer.appendChild(item);
+            }
+
+            // EXPORT
+            document.getElementById("export-btn").addEventListener("click", () => {
+                const json = window.GTMStorage.exportAsJsonString();
+                const ts = new Date().toISOString().replaceAll(":", "-");
+                downloadText(`guess-the-manga-progress-${ts}.json`, json);
+            });
+
+            // IMPORT
+            const importBtn = document.getElementById("import-btn");
+            const importFile = document.getElementById("import-file");
+
+            importBtn.addEventListener("click", () => importFile.click());
+
+            importFile.addEventListener("change", async (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    window.GTMStorage.importFromJsonString(text);
+                    // refresh pagina per ricaricare lista
+                    window.location.reload();
+                } catch (err) {
+                    alert("Import failed: " + (err && err.message ? err.message : String(err)));
+                } finally {
+                    importFile.value = "";
+                }
+            });
+        });
     </script>
 </body>
 </html>
