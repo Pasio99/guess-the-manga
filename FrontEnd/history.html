@@ -157,10 +157,11 @@
     <script src="storage.js"></script>
 
     <script>
-        function navigateToLevel(level) {
-            localStorage.setItem('navigateToLevel', level);
-            window.location.href = "../index.html";
-        }
+        function navigateToLevel(level, mode) {
+          localStorage.setItem('navigateToLevel', level);
+          localStorage.setItem('navigateMode', mode || 'play'); // play | view
+          window.location.href = "../index.html";
+          }
 
         function downloadText(filename, text) {
             const blob = new Blob([text], { type: "application/json;charset=utf-8" });
@@ -220,8 +221,10 @@
                 item.appendChild(attemptsSpan);
                 item.appendChild(statusSpan);
 
-                item.addEventListener('click', () => navigateToLevel(i));
-
+                const isFailed = (lvl && lvl.played && !lvl.solved); // played ma non solved => failed
+                const mode = isFailed ? "view" : "play";
+                item.addEventListener('click', () => navigateToLevel(i, mode));
+                
                 historyContainer.appendChild(item);
             }
 
@@ -257,3 +260,4 @@
     </script>
 </body>
 </html>
+
