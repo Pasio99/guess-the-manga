@@ -34,6 +34,11 @@ let hintVisible = false;
 let maxPanelReached = 0;    // quante immagini hai “sbloccato” via tentativi
 let levelFinished = false;  // finito (correct o failed)
 
+// nuovo: modalità partita
+// play = gameplay normale
+// view = solo visione (usata per livelli Failed: non si possono trasformare in Solved)
+let gameMode = "play";
+
 function clampLevel(id) {
     if (id < 0) return 0;
     if (id >= levels.length) return levels.length - 1;
@@ -68,6 +73,19 @@ function resolveInitialLevelId() {
     return clampLevel(last);
 }
 
+// Legge la modalità passata da history.html (navigateMode = play/view)
+function resolveInitialMode() {
+    const m = localStorage.getItem("navigateMode");
+    if (m !== null) localStorage.removeItem("navigateMode");
+    return (m === "view" || m === "play") ? m : "play";
+}
+
+function isLevelFailedInStorage(levelId) {
+    const state = window.GTMStorage?.load?.();
+    const lvl = state?.levels?.[String(levelId)];
+    return !!(lvl && lvl.played && !lvl.solved);
+}
+
 function setLevel(levelId) {
     currentLevelId = clampLevel(levelId);
     currentPanel = 0;
@@ -75,6 +93,20 @@ function setLevel(levelId) {
     hintVisible = false;
     maxPanelReached = 0;
     levelFinished = false;
+
+    // Modalità richiesta (di default play)
+    gameMode = resolveInitialMode();
+
+    // Regola definitiva: se un livello è Failed, è sempre view-only
+    if (isLevelFailedInStorage(currentLevelId)) {
+        gameMode = "view";
+    }
+
+    // In view: sblocca tutte le immagini e blocca il submit
+    if (gameMode === "view") {
+        levelFinished = true; // così submit sparisce e non conteggiamo tentativi
+        maxPanelReached = levels[currentLevelId].panels.length - 1;
+    }
 
     window.GTMStorage?.setLastLevelId?.(currentLevelId);
     loadPanel();
@@ -122,6 +154,9 @@ function finishLevel(status) {
 }
 
 function checkAnswer() {
+    // view-only: niente submit
+    if (gameMode === "view") return;
+
     if (levelFinished) return;
 
     const input = document.getElementById("user-guess");
@@ -197,7 +232,7 @@ function previousPanel() {
 
 function nextPanel() {
     // puoi andare avanti solo fino a quello che hai sbloccato,
-    // oppure fino alla fine se il livello è finito
+    // oppure fino alla fine se il livello è finito (o in view-only)
     const limit = levelFinished ? (levels[currentLevelId].panels.length - 1) : maxPanelReached;
     if (currentPanel < limit) {
         currentPanel++;
@@ -216,6 +251,7 @@ function resetGame() {
     hintVisible = false;
     maxPanelReached = 0;
     levelFinished = false;
+    gameMode = "play";
 
     loadPanel();
 }
@@ -225,6 +261,7 @@ function updateButtonVisibility() {
     const nextBtn = document.getElementById("next-button");
     const submitBtn = document.getElementById("submit-button");
     const hintBtn = document.getElementById("hint-button");
+    const input = document.getElementById("user-guess");
 
     // prev/next visibili se hai almeno 1 tentativo o hint o fine livello
     const canNavigate = attemptsMade > 0 || hintVisible || levelFinished || maxPanelReached > 0;
@@ -239,9 +276,25 @@ function updateButtonVisibility() {
         hintBtn.classList.add("hidden");
     }
 
-    // submit sparisce se livello finito
-    if (levelFinished) submitBtn.classList.add("hidden");
-    else submitBtn.classList.remove("hidden");
+    // gestione input + submit
+    if (gameMode === "view") {
+        // view-only: niente submit e input disabilitato
+        submitBtn.classList.add("hidden");
+        if (input) {
+            input.disabled = true;
+            input.placeholder = "Level locked (view only)";
+            input.value = "";
+        }
+    } else {
+        if (input) {
+            input.disabled = false;
+            input.placeholder = "Enter your guess here...";
+        }
+
+        // submit sparisce se livello finito
+        if (levelFinished) submitBtn.classList.add("hidden");
+        else submitBtn.classList.remove("hidden");
+    }
 }
 
 function navigateToStatistics() {
