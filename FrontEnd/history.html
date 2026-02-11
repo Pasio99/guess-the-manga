@@ -223,8 +223,10 @@
                 item.appendChild(attemptsSpan);
                 item.appendChild(statusSpan);
 
-                const isFailed = (lvl && lvl.played && !lvl.solved); // played ma non solved => failed
-                const mode = isFailed ? "view" : "play";
+                const isPlayed = !!(lvl && lvl.played);
+                const isSolved = !!(lvl && lvl.solved);
+
+                const mode = (isPlayed || isSolved) ? "view" : "play";
                 item.addEventListener('click', () => navigateToLevel(i, mode));
 
                 historyContainer.appendChild(item);
@@ -262,3 +264,4 @@
     </script>
 </body>
 </html>
+
