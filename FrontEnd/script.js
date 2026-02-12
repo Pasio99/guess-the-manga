@@ -38,41 +38,17 @@ let levelFinished = false;
 // view = solo visione (livelli già giocati)
 let gameMode = "play";
 
-// daily
-let isDailyMode = false;
-
 function clampLevel(id) {
   if (id < 0) return 0;
   if (id >= levels.length) return levels.length - 1;
   return id;
 }
 
-function getDailyLevelId() {
-  // “manga del giorno” stabile: days since 2024-01-01 UTC modulo N
-  const N = levels.length;
-  const base = Date.UTC(2024, 0, 1);
-  const now = new Date();
-  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  const days = Math.floor((todayUtc - base) / (24 * 60 * 60 * 1000));
-  const idx = ((days % N) + N) % N;
-  return idx;
-}
-
-function resolveDailyMode() {
-  const params = new URLSearchParams(window.location.search);
-  const q = params.get("daily");
-  return q === "1" || q === "true";
-}
-
 // Carica livello da:
-// 1) daily (se ?daily=1)
-// 2) navigateToLevel in localStorage (history)
-// 3) querystring ?level=...
-// 4) lastLevelId
+// 1) navigateToLevel in localStorage (history)
+// 2) querystring ?level=...
+// 3) lastLevelId
 function resolveInitialLevelId() {
-  isDailyMode = resolveDailyMode();
-  if (isDailyMode) return clampLevel(getDailyLevelId());
-
   const nav = localStorage.getItem("navigateToLevel");
   if (nav !== null) {
     localStorage.removeItem("navigateToLevel");
@@ -111,21 +87,19 @@ function normalizeAnswer(s) {
   return String(s)
     .trim()
     .toLowerCase()
-    .normalize("NFD")                 // separa lettere e accenti
-    .replace(/[\u0300-\u036f]/g, "")  // rimuove accenti
-    .replace(/['’`]/g, "")            // apostrofi
-    .replace(/[^a-z0-9]+/g, "");      // toglie spazi, trattini, punteggiatura, ecc.
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/['’`]/g, "")
+    .replace(/[^a-z0-9]+/g, "");
 }
 
 function getAcceptedAnswersForLevel(levelId) {
-  // prendiamo le risposte dal panel corrente
-  const panel = levels[levelId].panels[0]; // risposta uguale su tutti i panel nel tuo setup
+  const panel = levels[levelId].panels[0]; // nel tuo setup answer è coerente tra panels
   const list = [];
 
   if (panel.answers && Array.isArray(panel.answers)) list.push(...panel.answers);
   if (panel.answer) list.push(panel.answer);
 
-  // rimuovi duplicati (normalizzati)
   const seen = new Set();
   const out = [];
   for (const a of list) {
@@ -141,9 +115,16 @@ function getAcceptedAnswersForLevel(levelId) {
 function isCorrectGuess(levelId, userGuess) {
   const g = normalizeAnswer(userGuess);
   if (!g) return false;
-
   const accepted = getAcceptedAnswersForLevel(levelId);
   return accepted.some(a => normalizeAnswer(a) === g);
+}
+
+function goNextOrHistory() {
+  if (currentLevelId < levels.length - 1) {
+    setLevel(currentLevelId + 1);
+  } else {
+    navigateToStatistics();
+  }
 }
 
 function setLevel(levelId) {
@@ -154,14 +135,10 @@ function setLevel(levelId) {
   maxPanelReached = 0;
   levelFinished = false;
 
-  // Modalità richiesta (di default play)
   gameMode = resolveInitialMode();
 
-  // Regola definitiva: se già giocato -> view
+  // Regola: se già giocato (Solved o Failed) -> view
   if (isLevelLockedToView(currentLevelId)) gameMode = "view";
-
-  // daily è sempre "play" solo se non giocato; se già giocato resta view (coerente con regola)
-  if (isDailyMode && gameMode !== "view") gameMode = "play";
 
   if (gameMode === "view") {
     levelFinished = true;
@@ -182,12 +159,7 @@ function loadPanel() {
   const current = levels[currentLevelId].panels[currentPanel];
 
   panelImage.src = current.src;
-
-  if (isDailyMode) {
-    levelIndicator.textContent = `Daily Manga`;
-  } else {
-    levelIndicator.textContent = `Manga #${currentLevelId + 1}`;
-  }
+  levelIndicator.textContent = `Manga #${currentLevelId + 1}`;
 
   if (hintVisible) {
     hintOverlay.textContent = current.hint;
@@ -236,19 +208,7 @@ function checkAnswer() {
     setTimeout(() => {
       result.textContent = "";
       input.value = "";
-
-      // In daily: dopo correct vai in history
-      if (isDailyMode) {
-        navigateToStatistics();
-        return;
-      }
-
-      // Vai automaticamente al livello successivo (se esiste)
-      if (currentLevelId < levels.length - 1) {
-        setLevel(currentLevelId + 1);
-      } else {
-        navigateToStatistics();
-      }
+      goNextOrHistory();
     }, 900);
 
     return;
@@ -271,8 +231,9 @@ function checkAnswer() {
         result.textContent = "Last guess!";
         result.style.color = "orange";
       }
-    }, 1200);
+    }, 900);
   } else {
+    // --- FINITI I TENTATIVI: FAIL + AUTO-NEXT ---
     result.textContent = "Out of attempts! Level failed.";
     result.style.color = "red";
 
@@ -281,8 +242,8 @@ function checkAnswer() {
     setTimeout(() => {
       result.textContent = "";
       input.value = "";
-      loadPanel();
-    }, 1200);
+      goNextOrHistory();
+    }, 900);
   }
 }
 
