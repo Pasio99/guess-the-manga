@@ -1,21 +1,37 @@
+:root{
+    --header-h: 56px;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #000000;
     color: #ffffff;
     margin: 0;
-    padding: 60px 0 0 0;
+
+    /* spazio per header fisso */
+    padding: var(--header-h) 0 0 0;
+
+    /* niente scroll */
+    height: 100vh;
+    overflow: hidden;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    height: 100vh;
-    overflow-y: auto;
+
+    /* riempi i lati con un pattern leggero (vedi punto 4) */
+    background-image:
+      radial-gradient(rgba(98,0,234,0.18) 1px, transparent 1px),
+      radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-position: 0 0, 12px 12px;
+    background-size: 24px 24px;
 }
 
 header {
     background-color: #6200ea;
     color: white;
-    padding: 10px 20px; 
+    padding: 10px 20px;
     width: 100%;
     text-align: center;
     position: fixed;
@@ -25,154 +41,103 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: var(--header-h);
+    box-sizing: border-box;
 }
 
 header h1 {
-    font-size: 24px;
+    font-size: 22px;
     margin: 0;
-    /* display: inline-block; /* Center correction */
 }
 
 .history-link {
-    margin-left: 15px; /* Adjust as needed to position the image next to the text */
-    display: inline-block; /* Adjust as needed */
+    margin-left: 15px;
+    display: inline-block;
 }
 
 .history-link img {
-    width: 30px; /* Dimensione dell'immagine */
+    width: 28px;
     height: auto;
 }
 
-.header-links {
-    font-size: 24px;
-    margin: 0; /* Margine destro per i link */
-}
-
-.login-link {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 20px;
-    position: absolute;
-    right: 250px;
-}
-
-.login-link:hover {
-    text-decoration: underline;
-}
-
+/* CARD PRINCIPALE */
 .game-container {
-    background: #333333;
+    background: rgba(51,51,51,0.92);
     border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 90%;
-    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    padding: 14px;
+    width: 92%;
+    max-width: 560px;
     text-align: center;
     position: relative;
-    margin-top: 80px;
-}
 
-.panel {
-    margin: 20px 0;
-    position: relative;
+    /* IMPORTANT: niente scroll, deve stare nel viewport */
+    height: calc(100vh - var(--header-h) - 18px);
+    margin-top: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-sizing: border-box;
+
+    backdrop-filter: blur(2px);
 }
 
 .level-indicator {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin: 0;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.panel {
+    position: relative;
+    margin: 0;
+    flex: 1 1 auto;
+
+    /* lascia spazio ai controlli sotto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Immagine: deve stare sempre a schermo */
+#manga-panel {
+    width: 100%;
+    max-height: 46vh;      /* qui controlli la “grandezza” percepita */
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
+
+/* input */
 input {
     padding: 10px;
     font-size: 16px;
-    width: calc(100% - 24px);
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #333333;
+    width: 100%;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.25);
     color: #fff;
+    box-sizing: border-box;
 }
 
 input::placeholder {
-    color: #fff;
+    color: rgba(255,255,255,0.75);
 }
 
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #6200ea;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #3700b3;
-}
-
-.result {
-    margin-top: 10px;
-    font-weight: bold;
-    color: orangered;
-}
-
-.hint {
-    margin-top: 10px;
-    font-style: italic;
-    color: #6200ea;
-}
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.button-container button {
-    flex: 1;
-}
-
-.hidden {
-    display: none;
-}
-
-.hint-overlay {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: rgba(98, 0, 234, 0.8);
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 14px;
-    max-width: 80%;
-    z-index: 10;
-}
-
+/* progress */
 .progress-container {
     width: 100%;
     background-color: #ddd;
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
-    margin-top: 10px;
     position: relative;
+    height: 18px;
 }
 
 .progress-bar {
     width: 0%;
-    height: 20px;
+    height: 100%;
     background-color: #6200ea;
     transition: width 0.3s ease;
 }
@@ -183,4 +148,76 @@ button:hover {
     bottom: 0;
     width: 2px;
     background-color: #fff;
+}
+
+/* bottoni */
+button {
+    padding: 10px 14px;
+    font-size: 16px;
+    background-color: #6200ea;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.05s ease;
+    white-space: nowrap;
+}
+
+button:hover {
+    background-color: #3700b3;
+}
+
+button:active {
+    transform: scale(0.99);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    /* se compaiono 3 bottoni, non devono spingere giù: wrappa */
+    flex-wrap: wrap;
+}
+
+.button-container button {
+    flex: 1 1 160px;
+}
+
+/* hint button sotto, ma compatto */
+#hint-button {
+    width: 100%;
+    padding: 10px 14px;
+    margin-top: -2px;
+}
+
+/* result */
+.result {
+    margin-top: 0;
+    font-weight: bold;
+    min-height: 20px; /* evita “salti” quando compare/scompare */
+}
+
+/* overlay hint */
+.hidden { display: none; }
+
+.hint-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(98, 0, 234, 0.85);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    max-width: 85%;
+    z-index: 10;
+}
+
+/* mobile: ancora più compatto */
+@media (max-width: 420px) {
+    header h1 { font-size: 18px; }
+    #manga-panel { max-height: 42vh; }
+    button { font-size: 15px; }
+    .button-container button { flex-basis: 140px; }
 }
