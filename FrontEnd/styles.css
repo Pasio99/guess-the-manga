@@ -8,10 +8,8 @@ body {
     color: #ffffff;
     margin: 0;
 
-    /* spazio per header fisso */
     padding: var(--header-h) 0 0 0;
 
-    /* niente scroll */
     height: 100vh;
     overflow: hidden;
 
@@ -20,7 +18,6 @@ body {
     align-items: center;
     justify-content: flex-start;
 
-    /* riempi i lati con un pattern leggero (vedi punto 4) */
     background-image:
       radial-gradient(rgba(98,0,234,0.18) 1px, transparent 1px),
       radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
@@ -71,7 +68,6 @@ header h1 {
     text-align: center;
     position: relative;
 
-    /* IMPORTANT: niente scroll, deve stare nel viewport */
     height: calc(100vh - var(--header-h) - 18px);
     margin-top: 10px;
 
@@ -85,8 +81,9 @@ header h1 {
 
 .level-indicator {
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
     margin: 0;
+    flex: 0 0 auto;
 }
 
 .panel {
@@ -94,22 +91,19 @@ header h1 {
     margin: 0;
     flex: 1 1 auto;
 
-    /* lascia spazio ai controlli sotto */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Immagine: deve stare sempre a schermo */
 #manga-panel {
     width: 100%;
-    max-height: 46vh;      /* qui controlli la “grandezza” percepita */
+    max-height: 46vh;
     object-fit: contain;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.35);
 }
 
-/* input */
 input {
     padding: 10px;
     font-size: 16px;
@@ -119,27 +113,31 @@ input {
     background-color: rgba(0,0,0,0.25);
     color: #fff;
     box-sizing: border-box;
+    flex: 0 0 auto;
 }
 
 input::placeholder {
     color: rgba(255,255,255,0.75);
 }
 
-/* progress */
+/* progress: sempre sottile e NON si schiaccia */
 .progress-container {
     width: 100%;
-    background-color: #ddd;
-    border-radius: 10px;
+    background-color: rgba(255,255,255,0.18);
+    border-radius: 999px;
     overflow: hidden;
     position: relative;
-    height: 18px;
+
+    height: 12px;              /* sottile ma visibile */
+    flex: 0 0 auto;
+    flex-shrink: 0;            /* <-- IMPORTANTISSIMO */
 }
 
 .progress-bar {
     width: 0%;
     height: 100%;
     background-color: #6200ea;
-    transition: width 0.3s ease;
+    transition: width 0.25s ease;
 }
 
 .progress-tick {
@@ -147,7 +145,7 @@ input::placeholder {
     top: 0;
     bottom: 0;
     width: 2px;
-    background-color: #fff;
+    background-color: rgba(255,255,255,0.65);
 }
 
 /* bottoni */
@@ -175,27 +173,32 @@ button:active {
     display: flex;
     justify-content: center;
     gap: 10px;
-
-    /* se compaiono 3 bottoni, non devono spingere giù: wrappa */
     flex-wrap: wrap;
+    flex: 0 0 auto;
+    flex-shrink: 0;
 }
 
 .button-container button {
     flex: 1 1 160px;
+    min-width: 150px;
 }
 
-/* hint button sotto, ma compatto */
+/* Show/Hide Hint: stessa dimensione degli altri e CENTRATO */
 #hint-button {
-    width: 100%;
-    padding: 10px 14px;
-    margin-top: -2px;
+    width: auto;              /* non full width */
+    flex: 1 1 160px;          /* come gli altri */
+    max-width: 200px;         /* così rimane “centrato” visivamente */
+    align-self: center;
+    margin: 0 auto;
 }
 
 /* result */
 .result {
     margin-top: 0;
-    font-weight: bold;
-    min-height: 20px; /* evita “salti” quando compare/scompare */
+    font-weight: 700;
+    min-height: 20px;
+    flex: 0 0 auto;
+    flex-shrink: 0;
 }
 
 /* overlay hint */
@@ -214,10 +217,11 @@ button:active {
     z-index: 10;
 }
 
-/* mobile: ancora più compatto */
+/* mobile */
 @media (max-width: 420px) {
     header h1 { font-size: 18px; }
     #manga-panel { max-height: 42vh; }
     button { font-size: 15px; }
-    .button-container button { flex-basis: 140px; }
+    .button-container button { flex-basis: 140px; min-width: 130px; }
+    #hint-button { max-width: 180px; }
 }
