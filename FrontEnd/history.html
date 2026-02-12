@@ -88,6 +88,34 @@
             opacity: 0.9;
         }
 
+        .summary {
+            background: #2b2b2b;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            text-align: left;
+        }
+
+        .summary .box {
+            background: #3a3a3a;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .summary .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .summary .value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
         .history-item {
             display: flex;
             justify-content: space-between;
@@ -150,10 +178,11 @@
             Tip: you can click any level to start from there.
         </div>
 
+        <div id="summary" class="summary" style="display:none;"></div>
+
         <div id="history-container"></div>
     </div>
 
-    <!-- nuovo: storage -->
     <script src="storage.js"></script>
 
     <script>
@@ -175,15 +204,43 @@
             URL.revokeObjectURL(url);
         }
 
+        function formatMs(ms) {
+            if (ms === null || ms === undefined) return "—";
+            const totalSec = Math.round(ms / 1000);
+            const m = Math.floor(totalSec / 60);
+            const s = totalSec % 60;
+            if (m <= 0) return `${s}s`;
+            return `${m}m ${s}s`;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const historyContainer = document.getElementById('history-container');
+            const summaryEl = document.getElementById('summary');
 
-            const state = window.GTMStorage.load(); // <-- spostato QUI
+            const state = window.GTMStorage.load();
 
             const totalLevels = parseInt(localStorage.getItem('totalLevels'), 10) || 0;
             const safeTotal = totalLevels > 0 ? totalLevels : Object.keys(state.levels).length;
 
-            // RENDER LISTA LIVELLI (sempre cliccabili)
+            // summary stats
+            const stats = window.GTMStorage.computeStats(safeTotal);
+            summaryEl.style.display = "grid";
+            summaryEl.innerHTML = `
+                <div class="box">
+                    <div class="label">Completion</div>
+                    <div class="value">${stats.totalLevels ? stats.completionPct.toFixed(0) : 0}%</div>
+                </div>
+                <div class="box">
+                    <div class="label">Streak</div>
+                    <div class="value">${stats.streak}</div>
+                </div>
+                <div class="box">
+                    <div class="label">Avg time (solved)</div>
+                    <div class="value">${formatMs(stats.avgMs)}</div>
+                </div>
+            `;
+
+            // lista livelli (cliccabili)
             historyContainer.innerHTML = "";
             for (let i = 0; i < safeTotal; i++) {
                 const lvl = state.levels[String(i)] || null;
@@ -223,12 +280,11 @@
                 item.appendChild(attemptsSpan);
                 item.appendChild(statusSpan);
 
+                // vuoi view-mode anche per solved
                 const isPlayed = !!(lvl && lvl.played);
-                const isSolved = !!(lvl && lvl.solved);
+                const mode = isPlayed ? "view" : "play";
 
-                const mode = (isPlayed || isSolved) ? "view" : "play";
                 item.addEventListener('click', () => navigateToLevel(i, mode));
-
                 historyContainer.appendChild(item);
             }
 
@@ -252,7 +308,6 @@
                 try {
                     const text = await file.text();
                     window.GTMStorage.importFromJsonString(text);
-                    // refresh pagina per ricaricare lista
                     window.location.reload();
                 } catch (err) {
                     alert("Import failed: " + (err && err.message ? err.message : String(err)));
@@ -264,4 +319,3 @@
     </script>
 </body>
 </html>
-
