@@ -7,9 +7,10 @@
 
   function defaultState() {
     return {
-      version: 2,
+      version: 3,
       levels: {}, // levelId -> data
-      lastLevelId: 0
+      lastLevelId: 0,
+      inProgress: null // { levelId, attemptsMade, maxPanelReached, currentPanel, hintVisible }
     };
   }
 
@@ -22,7 +23,23 @@
     }
   }
 
-  // Migrazione dai vecchi key del tuo progetto (resultLog, currentLevel, ecc.)
+  function makeEmptyLevel() {
+    return {
+      solved: false,
+      solvedAt: null,
+      attemptsToSolve: null,
+
+      played: false,
+      lastStatus: null,     // "Correct" | "Failed"
+      lastAttempts: null,
+      lastPlayedAt: null,
+
+      startedAt: null,
+      finishedAt: null,
+      durationMs: null
+    };
+  }
+
   function migrateFromLegacyKeys(state) {
     const hasSomeLevel = state && state.levels && Object.keys(state.levels).length > 0;
     if (hasSomeLevel) return state;
@@ -58,7 +75,6 @@
     return state;
   }
 
-  // Migrazione da v1 (se presente)
   function migrateFromV1IfPresent() {
     const v1raw = localStorage.getItem("gtm_progress_v1");
     if (!v1raw) return null;
@@ -80,7 +96,6 @@
         lastAttempts: typeof v.lastAttempts === "number" ? v.lastAttempts : null,
         lastPlayedAt: v.lastPlayedAt ?? null,
 
-        // nuovi campi v2
         startedAt: v.startedAt ?? null,
         finishedAt: v.finishedAt ?? null,
         durationMs: typeof v.durationMs === "number" ? v.durationMs : null
@@ -90,44 +105,24 @@
     return st;
   }
 
-  function makeEmptyLevel() {
-    return {
-      solved: false,
-      solvedAt: null,
-      attemptsToSolve: null,
-
-      played: false,
-      lastStatus: null,     // "Correct" | "Failed"
-      lastAttempts: null,   // attempts in last run
-      lastPlayedAt: null,   // last opened/played timestamp
-
-      // v2 stats
-      startedAt: null,      // when started first time (play)
-      finishedAt: null,     // when finished (Correct/Failed)
-      durationMs: null      // finishedAt - startedAt (ms)
-    };
-  }
-
   function load() {
-    // Se esiste già v2
     const raw = localStorage.getItem(KEY);
     if (raw) {
       let st = safeParse(raw, defaultState());
       if (!st || typeof st !== "object") st = defaultState();
       if (!st.levels) st.levels = {};
       if (typeof st.lastLevelId !== "number") st.lastLevelId = 0;
-      if (typeof st.version !== "number") st.version = 2;
+      if (typeof st.version !== "number") st.version = 3;
+      if (!("inProgress" in st)) st.inProgress = null;
       return st;
     }
 
-    // Se c'è v1, migra e salva in v2
     const migratedV1 = migrateFromV1IfPresent();
     if (migratedV1) {
       localStorage.setItem(KEY, JSON.stringify(migratedV1));
       return migratedV1;
     }
 
-    // Altrimenti crea nuovo stato e prova migrazione dai legacy keys
     let state = defaultState();
     state = migrateFromLegacyKeys(state);
     localStorage.setItem(KEY, JSON.stringify(state));
@@ -150,12 +145,10 @@
     save(state);
   }
 
-  // chiamata quando inizi a giocare un livello (solo in play mode)
   function markStarted(levelId) {
     const state = load();
     const lvl = getLevel(state, levelId);
 
-    // non sovrascrivere se già iniziato
     if (!lvl.startedAt) {
       lvl.startedAt = new Date().toISOString();
     }
@@ -173,11 +166,9 @@
     lvl.lastAttempts = attempts;
     lvl.lastPlayedAt = new Date().toISOString();
 
-    // finishedAt/durationMs
     const nowIso = new Date().toISOString();
     lvl.finishedAt = nowIso;
 
-    // se manca startedAt (es: vecchia migrazione), impostalo ora per avere duration
     if (!lvl.startedAt) lvl.startedAt = nowIso;
 
     const started = Date.parse(lvl.startedAt);
@@ -186,7 +177,6 @@
       lvl.durationMs = Math.max(0, finished - started);
     }
 
-    // Solved sticky
     if (String(status).toLowerCase() === "correct") {
       if (!lvl.solved) {
         lvl.solved = true;
@@ -202,6 +192,10 @@
     }
 
     state.lastLevelId = Number(levelId) || 0;
+
+    // finito -> nessun inProgress
+    state.inProgress = null;
+
     save(state);
     return state;
   }
@@ -214,6 +208,31 @@
   function isPlayed(levelId) {
     const state = load();
     return !!state.levels[String(levelId)]?.played;
+  }
+
+  function setInProgress(levelId, data) {
+    const state = load();
+    state.inProgress = {
+      levelId: Number(levelId),
+      attemptsMade: Number(data.attemptsMade) || 0,
+      maxPanelReached: Number(data.maxPanelReached) || 0,
+      currentPanel: Number(data.currentPanel) || 0,
+      hintVisible: !!data.hintVisible
+    };
+    save(state);
+    return state;
+  }
+
+  function getInProgress() {
+    const state = load();
+    return state.inProgress || null;
+  }
+
+  function clearInProgress() {
+    const state = load();
+    state.inProgress = null;
+    save(state);
+    return state;
   }
 
   function computeStats(totalLevels) {
@@ -231,7 +250,6 @@
       }
     }
 
-    // streak = quanti livelli risolti di fila dal livello 1 in poi
     let streak = 0;
     for (let i = 0; i < N; i++) {
       const lvl = state.levels[String(i)];
@@ -251,7 +269,6 @@
     localStorage.removeItem(KEY);
     localStorage.removeItem("gtm_progress_v1");
 
-    // pulizia vecchie chiavi legacy
     localStorage.removeItem("currentLevel");
     localStorage.removeItem("currentPanel");
     localStorage.removeItem("attempts");
@@ -279,14 +296,15 @@
 
   function importFromJsonString(jsonString) {
     const obj = safeParse(jsonString, null);
-    if (!obj || typeof obj !== "object") throw new Error("File JSON non valido.");
+    if (!obj || typeof obj !== "object") throw new Error("Invalid JSON file.");
 
     const maybeState = obj.data ?? obj;
-    if (!maybeState || typeof maybeState !== "object") throw new Error("Stato non valido.");
-    if (!maybeState.levels || typeof maybeState.levels !== "object") throw new Error("levels mancante o non valido.");
+    if (!maybeState || typeof maybeState !== "object") throw new Error("Invalid state.");
+    if (!maybeState.levels || typeof maybeState.levels !== "object") throw new Error("Missing levels.");
 
-    if (typeof maybeState.version !== "number") maybeState.version = 2;
+    if (typeof maybeState.version !== "number") maybeState.version = 3;
     if (typeof maybeState.lastLevelId !== "number") maybeState.lastLevelId = 0;
+    if (!("inProgress" in maybeState)) maybeState.inProgress = null;
 
     localStorage.setItem(KEY, JSON.stringify(maybeState));
     return maybeState;
@@ -302,6 +320,9 @@
     markFinished,
     isSolved,
     isPlayed,
+    setInProgress,
+    getInProgress,
+    clearInProgress,
     computeStats,
     resetAll,
     exportAsJsonString,
