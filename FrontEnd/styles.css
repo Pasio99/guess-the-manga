@@ -3,7 +3,7 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: #000000;
     color: #ffffff;
     margin: 0;
@@ -43,8 +43,11 @@ header {
 }
 
 header h1 {
-    font-size: 22px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.5px;
     margin: 0;
+    line-height: 1;
 }
 
 .history-link {
@@ -57,7 +60,13 @@ header h1 {
     height: auto;
 }
 
-/* CARD PRINCIPALE */
+.history-link.disabled {
+    opacity: 0.55;
+    pointer-events: none;
+    filter: grayscale(0.2);
+}
+
+/* CARD PRINCIPALE (desktop) */
 .game-container {
     background: rgba(51,51,51,0.92);
     border-radius: 16px;
@@ -90,7 +99,6 @@ header h1 {
     position: relative;
     margin: 0;
     flex: 1 1 auto;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -120,7 +128,7 @@ input::placeholder {
     color: rgba(255,255,255,0.75);
 }
 
-/* progress: sempre sottile e NON si schiaccia */
+/* progress */
 .progress-container {
     width: 100%;
     background-color: rgba(255,255,255,0.18);
@@ -128,9 +136,9 @@ input::placeholder {
     overflow: hidden;
     position: relative;
 
-    height: 12px;              /* sottile ma visibile */
+    height: 12px;
     flex: 0 0 auto;
-    flex-shrink: 0;            /* <-- IMPORTANTISSIMO */
+    flex-shrink: 0;
 }
 
 .progress-bar {
@@ -152,6 +160,9 @@ input::placeholder {
 button {
     padding: 10px 14px;
     font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+
     background-color: #6200ea;
     color: white;
     border: none;
@@ -161,13 +172,8 @@ button {
     white-space: nowrap;
 }
 
-button:hover {
-    background-color: #3700b3;
-}
-
-button:active {
-    transform: scale(0.99);
-}
+button:hover { background-color: #3700b3; }
+button:active { transform: scale(0.99); }
 
 .button-container {
     display: flex;
@@ -181,15 +187,6 @@ button:active {
 .button-container button {
     flex: 1 1 160px;
     min-width: 150px;
-}
-
-/* Show/Hide Hint: stessa dimensione degli altri e CENTRATO */
-#hint-button {
-    width: auto;              /* non full width */
-    flex: 1 1 160px;          /* come gli altri */
-    max-width: 200px;         /* così rimane “centrato” visivamente */
-    align-self: center;
-    margin: 0 auto;
 }
 
 /* result */
@@ -217,11 +214,80 @@ button:active {
     z-index: 10;
 }
 
-/* mobile */
-@media (max-width: 420px) {
-    header h1 { font-size: 18px; }
-    #manga-panel { max-height: 42vh; }
-    button { font-size: 15px; }
-    .button-container button { flex-basis: 140px; min-width: 130px; }
-    #hint-button { max-width: 180px; }
+/* ---------------- MOBILE FIX ---------------- */
+/* Su mobile il problema è il viewport dinamico (barra indirizzi).
+   Usiamo 100dvh e riduciamo l'immagine per far stare SEMPRE i controlli. */
+@media (max-width: 520px) {
+    :root { --header-h: 52px; }
+
+    body {
+        height: 100dvh;          /* viewport dinamico */
+        height: 100vh;           /* fallback */
+        overflow: hidden;
+        padding: var(--header-h) 0 0 0;
+    }
+
+    header h1 {
+        font-size: 26px;
+        letter-spacing: 0.4px;
+    }
+
+    .history-link img { width: 26px; }
+
+    .game-container {
+        width: 94%;
+        max-width: 520px;
+        padding: 12px;
+        gap: 8px;
+
+        /* IMPORTANTISSIMO: usa dvh */
+        height: calc(100dvh - var(--header-h) - 12px);
+        height: calc(100vh - var(--header-h) - 12px);
+        margin-top: 8px;
+    }
+
+    .level-indicator { font-size: 14px; }
+
+    /* immagine più bassa così i pulsanti non spariscono */
+    #manga-panel {
+        max-height: 30dvh;
+        max-height: 30vh;
+    }
+
+    input {
+        font-size: 15px;
+        padding: 9px;
+    }
+
+    .progress-container {
+        height: 12px;
+    }
+
+    button {
+        font-size: 15px;
+        padding: 9px 12px;
+        border-radius: 10px;
+    }
+
+    .button-container button {
+        flex: 1 1 140px;
+        min-width: 130px;
+    }
+
+    .hint-overlay {
+        font-size: 13px;
+        padding: 9px;
+    }
+}
+
+/* mobile molto piccolo (es. iPhone SE) */
+@media (max-width: 380px) {
+    #manga-panel {
+        max-height: 26dvh;
+        max-height: 26vh;
+    }
+    .button-container button {
+        flex-basis: 120px;
+        min-width: 115px;
+    }
 }
