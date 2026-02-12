@@ -1,306 +1,374 @@
 const levels = [
-    {
-        panels: [
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image1.png", answer: "Naruto", hint: "No hint" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image2Naruto.png", answer: "Naruto", hint: "Target: Shonen" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto3.png", answer: "Naruto", hint: "Ended, N° of Tome: 72, Chapters: 700" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto5.png", answer: "Naruto", hint: "I'm gonna become Hokage!" }
-        ]
-    },
-    {
-        panels: [
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "One Piece", hint: "No hint" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "One Piece", hint: "Target: Shonen" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "One Piece", hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "One Piece", hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
-        ]
-    },
-    {
-        panels: [
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "The bugle call", hint: "No hint" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "The bugle call", hint: "Target: Shonen" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "The bugle call", hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
-            { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "prova", hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
-        ]
-    }
+  {
+    panels: [
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image1.png", answer: "Naruto", answers: ["Naruto", "ナルト"], hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image2Naruto.png", answer: "Naruto", answers: ["Naruto", "ナルト"], hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto3.png", answer: "Naruto", answers: ["Naruto", "ナルト"], hint: "Ended, N° of Tome: 72, Chapters: 700" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto5.png", answer: "Naruto", answers: ["Naruto", "ナルト"], hint: "I'm gonna become Hokage!" }
+    ]
+  },
+  {
+    panels: [
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+    ]
+  },
+  {
+    panels: [
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "prova", answers: ["prova"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+    ]
+  }
 ];
 
-let currentLevelId = 0;     // 0-based
-let currentPanel = 0;       // 0..3
-let attemptsMade = 0;       // numero di submit fatti su questo livello
+let currentLevelId = 0; // 0-based
+let currentPanel = 0;   // 0..3
+let attemptsMade = 0;
 const maxAttempts = 4;
 
 let hintVisible = false;
-let maxPanelReached = 0;    // quante immagini hai “sbloccato” via tentativi
-let levelFinished = false;  // finito (correct o failed)
+let maxPanelReached = 0;
+let levelFinished = false;
 
 // play = gameplay normale
-// view = solo visione (usata per livelli già giocati)
+// view = solo visione (livelli già giocati)
 let gameMode = "play";
 
+// daily
+let isDailyMode = false;
+
 function clampLevel(id) {
-    if (id < 0) return 0;
-    if (id >= levels.length) return levels.length - 1;
-    return id;
+  if (id < 0) return 0;
+  if (id >= levels.length) return levels.length - 1;
+  return id;
+}
+
+function getDailyLevelId() {
+  // “manga del giorno” stabile: days since 2024-01-01 UTC modulo N
+  const N = levels.length;
+  const base = Date.UTC(2024, 0, 1);
+  const now = new Date();
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const days = Math.floor((todayUtc - base) / (24 * 60 * 60 * 1000));
+  const idx = ((days % N) + N) % N;
+  return idx;
+}
+
+function resolveDailyMode() {
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get("daily");
+  return q === "1" || q === "true";
 }
 
 // Carica livello da:
-// 1) navigateToLevel in localStorage (history.html)
-// 2) querystring ?level= (opzionale)
-// 3) stato salvato GTMStorage.lastLevelId
+// 1) daily (se ?daily=1)
+// 2) navigateToLevel in localStorage (history)
+// 3) querystring ?level=...
+// 4) lastLevelId
 function resolveInitialLevelId() {
-    const nav = localStorage.getItem("navigateToLevel");
-    if (nav !== null) {
-        localStorage.removeItem("navigateToLevel");
-        const n = parseInt(nav, 10);
-        return clampLevel(Number.isNaN(n) ? 0 : n);
-    }
+  isDailyMode = resolveDailyMode();
+  if (isDailyMode) return clampLevel(getDailyLevelId());
 
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get("level");
-    if (q !== null) {
-        const n = parseInt(q, 10);
-        // accettiamo sia 0-based sia 1-based
-        if (!Number.isNaN(n)) {
-            if (n >= 1 && n <= levels.length) return clampLevel(n - 1);
-            return clampLevel(n);
-        }
-    }
+  const nav = localStorage.getItem("navigateToLevel");
+  if (nav !== null) {
+    localStorage.removeItem("navigateToLevel");
+    const n = parseInt(nav, 10);
+    return clampLevel(Number.isNaN(n) ? 0 : n);
+  }
 
-    const st = window.GTMStorage?.load?.();
-    const last = st?.lastLevelId ?? 0;
-    return clampLevel(last);
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get("level");
+  if (q !== null) {
+    const n = parseInt(q, 10);
+    if (!Number.isNaN(n)) {
+      if (n >= 1 && n <= levels.length) return clampLevel(n - 1);
+      return clampLevel(n);
+    }
+  }
+
+  const st = window.GTMStorage?.load?.();
+  const last = st?.lastLevelId ?? 0;
+  return clampLevel(last);
 }
 
-// Legge la modalità passata da history.html (navigateMode = play/view)
 function resolveInitialMode() {
-    const m = localStorage.getItem("navigateMode");
-    if (m !== null) localStorage.removeItem("navigateMode");
-    return (m === "view" || m === "play") ? m : "play";
+  const m = localStorage.getItem("navigateMode");
+  if (m !== null) localStorage.removeItem("navigateMode");
+  return (m === "view" || m === "play") ? m : "play";
 }
 
 function isLevelLockedToView(levelId) {
-    const state = window.GTMStorage?.load?.();
-    const lvl = state?.levels?.[String(levelId)];
-    // locked = qualsiasi livello già giocato (Failed o Solved)
-    return !!(lvl && lvl.played);
+  return window.GTMStorage?.isPlayed?.(levelId) ?? false;
+}
+
+// --- Fuzzy matching helpers ---
+function normalizeAnswer(s) {
+  if (!s) return "";
+  return String(s)
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")                 // separa lettere e accenti
+    .replace(/[\u0300-\u036f]/g, "")  // rimuove accenti
+    .replace(/['’`]/g, "")            // apostrofi
+    .replace(/[^a-z0-9]+/g, "");      // toglie spazi, trattini, punteggiatura, ecc.
+}
+
+function getAcceptedAnswersForLevel(levelId) {
+  // prendiamo le risposte dal panel corrente
+  const panel = levels[levelId].panels[0]; // risposta uguale su tutti i panel nel tuo setup
+  const list = [];
+
+  if (panel.answers && Array.isArray(panel.answers)) list.push(...panel.answers);
+  if (panel.answer) list.push(panel.answer);
+
+  // rimuovi duplicati (normalizzati)
+  const seen = new Set();
+  const out = [];
+  for (const a of list) {
+    const n = normalizeAnswer(a);
+    if (!n) continue;
+    if (seen.has(n)) continue;
+    seen.add(n);
+    out.push(a);
+  }
+  return out;
+}
+
+function isCorrectGuess(levelId, userGuess) {
+  const g = normalizeAnswer(userGuess);
+  if (!g) return false;
+
+  const accepted = getAcceptedAnswersForLevel(levelId);
+  return accepted.some(a => normalizeAnswer(a) === g);
 }
 
 function setLevel(levelId) {
-    currentLevelId = clampLevel(levelId);
-    currentPanel = 0;
-    attemptsMade = 0;
-    hintVisible = false;
-    maxPanelReached = 0;
-    levelFinished = false;
+  currentLevelId = clampLevel(levelId);
+  currentPanel = 0;
+  attemptsMade = 0;
+  hintVisible = false;
+  maxPanelReached = 0;
+  levelFinished = false;
 
-    // Modalità richiesta (di default play)
-    gameMode = resolveInitialMode();
+  // Modalità richiesta (di default play)
+  gameMode = resolveInitialMode();
 
-    // Regola definitiva: se un livello è già stato giocato, è sempre view-only
-    if (isLevelLockedToView(currentLevelId)) {
-        gameMode = "view";
-    }
+  // Regola definitiva: se già giocato -> view
+  if (isLevelLockedToView(currentLevelId)) gameMode = "view";
 
-    // In view: sblocca tutte le immagini e blocca il submit
-    if (gameMode === "view") {
-        levelFinished = true;
-        maxPanelReached = levels[currentLevelId].panels.length - 1;
-    }
+  // daily è sempre "play" solo se non giocato; se già giocato resta view (coerente con regola)
+  if (isDailyMode && gameMode !== "view") gameMode = "play";
 
-    window.GTMStorage?.setLastLevelId?.(currentLevelId);
-    loadPanel();
+  if (gameMode === "view") {
+    levelFinished = true;
+    maxPanelReached = levels[currentLevelId].panels.length - 1;
+  } else {
+    // per stats: startedAt
+    window.GTMStorage?.markStarted?.(currentLevelId);
+  }
+
+  window.GTMStorage?.setLastLevelId?.(currentLevelId);
+  loadPanel();
 }
 
 function loadPanel() {
-    const panelImage = document.getElementById("manga-panel");
-    const hintOverlay = document.getElementById("hint-overlay");
-    const levelIndicator = document.getElementById("level-indicator");
-    const current = levels[currentLevelId].panels[currentPanel];
+  const panelImage = document.getElementById("manga-panel");
+  const hintOverlay = document.getElementById("hint-overlay");
+  const levelIndicator = document.getElementById("level-indicator");
+  const current = levels[currentLevelId].panels[currentPanel];
 
-    panelImage.src = current.src;
+  panelImage.src = current.src;
+
+  if (isDailyMode) {
+    levelIndicator.textContent = `Daily Manga`;
+  } else {
     levelIndicator.textContent = `Manga #${currentLevelId + 1}`;
+  }
 
-    if (hintVisible) {
-        hintOverlay.textContent = current.hint;
-        hintOverlay.classList.remove("hidden");
-    } else {
-        hintOverlay.textContent = "";
-        hintOverlay.classList.add("hidden");
-    }
+  if (hintVisible) {
+    hintOverlay.textContent = current.hint;
+    hintOverlay.classList.remove("hidden");
+  } else {
+    hintOverlay.textContent = "";
+    hintOverlay.classList.add("hidden");
+  }
 
-    updateProgressBar(currentPanel + 1, levels[currentLevelId].panels.length);
-    updateButtonVisibility();
+  updateProgressBar(currentPanel + 1, levels[currentLevelId].panels.length);
+  updateButtonVisibility();
 }
 
 function updateProgressBar(currentImageIndex, totalImages) {
-    const progressBar = document.getElementById("progress-bar");
-    const progressPercentage = (currentImageIndex / totalImages) * 100;
-    progressBar.style.width = progressPercentage + "%";
+  const progressBar = document.getElementById("progress-bar");
+  const progressPercentage = (currentImageIndex / totalImages) * 100;
+  progressBar.style.width = progressPercentage + "%";
 }
 
 function finishLevel(status) {
-    // status: "Correct" | "Failed"
-    levelFinished = true;
+  levelFinished = true;
+  window.GTMStorage?.markFinished?.(currentLevelId, status, attemptsMade);
 
-    // salva in progress persistente (sticky solved)
-    window.GTMStorage?.markFinished?.(currentLevelId, status, attemptsMade);
+  maxPanelReached = levels[currentLevelId].panels.length - 1;
+  currentPanel = Math.min(currentPanel, maxPanelReached);
 
-    // UX: se corretto o fallito, mostra tutto il livello sbloccato
-    maxPanelReached = levels[currentLevelId].panels.length - 1;
-    currentPanel = Math.min(currentPanel, maxPanelReached);
-
-    updateButtonVisibility();
+  updateButtonVisibility();
 }
 
 function checkAnswer() {
-    // view-only: niente submit
-    if (gameMode === "view") return;
-    if (levelFinished) return;
+  if (gameMode === "view") return;
+  if (levelFinished) return;
 
-    const input = document.getElementById("user-guess");
-    const userGuess = input.value.trim();
-    const result = document.getElementById("result");
-    const current = levels[currentLevelId].panels[currentPanel];
+  const input = document.getElementById("user-guess");
+  const userGuess = input.value.trim();
+  const result = document.getElementById("result");
 
-    // conta un tentativo per ogni Submit
-    attemptsMade += 1;
+  attemptsMade += 1;
 
-    if (userGuess.toLowerCase() === current.answer.toLowerCase()) {
-        result.textContent = "Correct!";
-        result.style.color = "green";
+  if (isCorrectGuess(currentLevelId, userGuess)) {
+    result.textContent = "Correct!";
+    result.style.color = "green";
 
-        finishLevel("Correct");
+    finishLevel("Correct");
 
-        setTimeout(() => {
-            result.textContent = "";
-            input.value = "";
+    setTimeout(() => {
+      result.textContent = "";
+      input.value = "";
 
-            // Vai automaticamente al livello successivo (se esiste)
-            if (currentLevelId < levels.length - 1) {
-                setLevel(currentLevelId + 1);
-            } else {
-                // Ultimo livello completato: vai alla history
-                navigateToStatistics();
-            }
-        }, 900);
-
+      // In daily: dopo correct vai in history
+      if (isDailyMode) {
+        navigateToStatistics();
         return;
-    }
+      }
 
-    // sbagliato
-    if (attemptsMade < maxAttempts) {
-        result.textContent = "Wrong answer! Try again.";
-        result.style.color = "red";
+      // Vai automaticamente al livello successivo (se esiste)
+      if (currentLevelId < levels.length - 1) {
+        setLevel(currentLevelId + 1);
+      } else {
+        navigateToStatistics();
+      }
+    }, 900);
 
-        // sblocca immagine successiva
-        const next = Math.min(maxPanelReached + 1, levels[currentLevelId].panels.length - 1);
-        currentPanel = next;
-        if (currentPanel > maxPanelReached) maxPanelReached = currentPanel;
+    return;
+  }
 
-        loadPanel();
+  // sbagliato
+  if (attemptsMade < maxAttempts) {
+    result.textContent = "Wrong answer! Try again.";
+    result.style.color = "red";
 
-        setTimeout(() => {
-            result.textContent = "";
-            if (attemptsMade === maxAttempts - 1) {
-                result.textContent = "Last guess!";
-                result.style.color = "orange";
-            }
-        }, 1200);
-    } else {
-        result.textContent = "Out of attempts! Level failed.";
-        result.style.color = "red";
+    const next = Math.min(maxPanelReached + 1, levels[currentLevelId].panels.length - 1);
+    currentPanel = next;
+    if (currentPanel > maxPanelReached) maxPanelReached = currentPanel;
 
-        finishLevel("Failed");
+    loadPanel();
 
-        setTimeout(() => {
-            result.textContent = "";
-            input.value = "";
-            loadPanel();
-        }, 1200);
-    }
+    setTimeout(() => {
+      result.textContent = "";
+      if (attemptsMade === maxAttempts - 1) {
+        result.textContent = "Last guess!";
+        result.style.color = "orange";
+      }
+    }, 1200);
+  } else {
+    result.textContent = "Out of attempts! Level failed.";
+    result.style.color = "red";
+
+    finishLevel("Failed");
+
+    setTimeout(() => {
+      result.textContent = "";
+      input.value = "";
+      loadPanel();
+    }, 1200);
+  }
 }
 
 function showHint() {
-    const hintOverlay = document.getElementById("hint-overlay");
-    const current = levels[currentLevelId].panels[currentPanel];
-    hintOverlay.textContent = current.hint;
-    hintOverlay.classList.remove("hidden");
-    hintVisible = true;
+  const hintOverlay = document.getElementById("hint-overlay");
+  const current = levels[currentLevelId].panels[currentPanel];
+  hintOverlay.textContent = current.hint;
+  hintOverlay.classList.remove("hidden");
+  hintVisible = true;
 }
 
 function previousPanel() {
-    if (currentPanel > 0) {
-        currentPanel--;
-        loadPanel();
-    }
+  if (currentPanel > 0) {
+    currentPanel--;
+    loadPanel();
+  }
 }
 
 function nextPanel() {
-    const limit = levelFinished ? (levels[currentLevelId].panels.length - 1) : maxPanelReached;
-    if (currentPanel < limit) {
-        currentPanel++;
-        loadPanel();
-    }
-}
-
-// (il bottone è stato rimosso da index.html, puoi lasciare questa funzione o eliminarla)
-function resetGame() {
-    window.GTMStorage?.resetAll?.();
-    currentLevelId = 0;
-    currentPanel = 0;
-    attemptsMade = 0;
-    hintVisible = false;
-    maxPanelReached = 0;
-    levelFinished = false;
-    gameMode = "play";
+  const limit = levelFinished ? (levels[currentLevelId].panels.length - 1) : maxPanelReached;
+  if (currentPanel < limit) {
+    currentPanel++;
     loadPanel();
+  }
 }
 
 function updateButtonVisibility() {
-    const prevBtn = document.getElementById("previous-button");
-    const nextBtn = document.getElementById("next-button");
-    const submitBtn = document.getElementById("submit-button");
-    const hintBtn = document.getElementById("hint-button");
-    const input = document.getElementById("user-guess");
+  const prevBtn = document.getElementById("previous-button");
+  const nextBtn = document.getElementById("next-button");
+  const submitBtn = document.getElementById("submit-button");
+  const hintBtn = document.getElementById("hint-button");
+  const input = document.getElementById("user-guess");
 
-    const canNavigate = attemptsMade > 0 || hintVisible || levelFinished || maxPanelReached > 0;
+  const canNavigate = attemptsMade > 0 || hintVisible || levelFinished || maxPanelReached > 0;
 
-    if (canNavigate) {
-        prevBtn.classList.remove("hidden");
-        nextBtn.classList.remove("hidden");
-        hintBtn.classList.remove("hidden");
-    } else {
-        prevBtn.classList.add("hidden");
-        nextBtn.classList.add("hidden");
-        hintBtn.classList.add("hidden");
+  if (canNavigate) {
+    prevBtn.classList.remove("hidden");
+    nextBtn.classList.remove("hidden");
+    hintBtn.classList.remove("hidden");
+  } else {
+    prevBtn.classList.add("hidden");
+    nextBtn.classList.add("hidden");
+    hintBtn.classList.add("hidden");
+  }
+
+  if (gameMode === "view") {
+    submitBtn.classList.add("hidden");
+    if (input) {
+      input.disabled = true;
+      input.placeholder = "View only";
+      input.value = "";
+    }
+  } else {
+    if (input) {
+      input.disabled = false;
+      input.placeholder = "Enter your guess here...";
     }
 
-    if (gameMode === "view") {
-        submitBtn.classList.add("hidden");
-        if (input) {
-            input.disabled = true;
-            input.placeholder = "Level locked (view only)";
-            input.value = "";
-        }
-    } else {
-        if (input) {
-            input.disabled = false;
-            input.placeholder = "Enter your guess here...";
-        }
-
-        if (levelFinished) submitBtn.classList.add("hidden");
-        else submitBtn.classList.remove("hidden");
-    }
+    if (levelFinished) submitBtn.classList.add("hidden");
+    else submitBtn.classList.remove("hidden");
+  }
 }
 
 function navigateToStatistics() {
-    localStorage.setItem("totalLevels", levels.length);
-    window.location.href = "FrontEnd/history.html";
+  localStorage.setItem("totalLevels", levels.length);
+  window.location.href = "FrontEnd/history.html";
+}
+
+// --- Enter to submit ---
+function wireEnterToSubmit() {
+  const input = document.getElementById("user-guess");
+  if (!input) return;
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      checkAnswer();
+    }
+  });
 }
 
 // ---- init ----
 localStorage.setItem("totalLevels", levels.length);
 
-currentLevelId = resolveInitialLevelId();
-setLevel(currentLevelId);
+window.addEventListener("DOMContentLoaded", () => {
+  wireEnterToSubmit();
+  currentLevelId = resolveInitialLevelId();
+  setLevel(currentLevelId);
+});
