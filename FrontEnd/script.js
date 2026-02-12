@@ -34,7 +34,7 @@ let hintVisible = false;
 let maxPanelReached = 0;
 let levelFinished = false;
 
-let gameMode = "play";
+let gameMode = "play"; // play | view
 
 function clampLevel(id) {
   if (id < 0) return 0;
@@ -48,16 +48,6 @@ function resolveInitialLevelId() {
     localStorage.removeItem("navigateToLevel");
     const n = parseInt(nav, 10);
     return clampLevel(Number.isNaN(n) ? 0 : n);
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  const q = params.get("level");
-  if (q !== null) {
-    const n = parseInt(q, 10);
-    if (!Number.isNaN(n)) {
-      if (n >= 1 && n <= levels.length) return clampLevel(n - 1);
-      return clampLevel(n);
-    }
   }
 
   const st = window.GTMStorage?.load?.();
@@ -75,7 +65,6 @@ function isLevelLockedToView(levelId) {
   return window.GTMStorage?.isPlayed?.(levelId) ?? false;
 }
 
-// --- Fuzzy matching helpers ---
 function normalizeAnswer(s) {
   if (!s) return "";
   return String(s)
@@ -112,27 +101,84 @@ function isCorrectGuess(levelId, userGuess) {
   return accepted.some(a => normalizeAnswer(a) === g);
 }
 
+function hasInProgressLock() {
+  const p = window.GTMStorage?.getInProgress?.();
+  return !!p && typeof p.levelId === "number";
+}
+
+function persistInProgress() {
+  if (gameMode !== "play") return;
+  if (levelFinished) return;
+  window.GTMStorage?.setInProgress?.(currentLevelId, {
+    attemptsMade,
+    maxPanelReached,
+    currentPanel,
+    hintVisible
+  });
+}
+
+function clearInProgress() {
+  window.GTMStorage?.clearInProgress?.();
+}
+
+function updateHistoryLockUI() {
+  const a = document.getElementById("history-link");
+  if (!a) return;
+
+  const locked = (gameMode === "play" && !levelFinished && hasInProgressLock());
+  if (locked) {
+    a.classList.add("disabled");
+    a.setAttribute("aria-disabled", "true");
+  } else {
+    a.classList.remove("disabled");
+    a.removeAttribute("aria-disabled");
+  }
+}
+
+function wireHistoryLinkGuard() {
+  const a = document.getElementById("history-link");
+  if (!a) return;
+
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    navigateToStatistics(false);
+  });
+}
+
 function goNextOrHistory() {
-  if (currentLevelId < levels.length - 1) setLevel(currentLevelId + 1);
-  else navigateToStatistics();
+  if (currentLevelId < levels.length - 1) {
+    setLevel(currentLevelId + 1);
+  } else {
+    navigateToStatistics(true);
+  }
 }
 
 function setLevel(levelId) {
   currentLevelId = clampLevel(levelId);
+
+  gameMode = resolveInitialMode();
+  if (isLevelLockedToView(currentLevelId)) gameMode = "view";
+
   currentPanel = 0;
   attemptsMade = 0;
   hintVisible = false;
   maxPanelReached = 0;
   levelFinished = false;
 
-  gameMode = resolveInitialMode();
-  if (isLevelLockedToView(currentLevelId)) gameMode = "view";
+  const prog = window.GTMStorage?.getInProgress?.();
+  if (gameMode === "play" && prog && Number(prog.levelId) === Number(currentLevelId)) {
+    attemptsMade = prog.attemptsMade || 0;
+    maxPanelReached = prog.maxPanelReached || 0;
+    currentPanel = prog.currentPanel || 0;
+    hintVisible = !!prog.hintVisible;
+  } else if (gameMode === "play") {
+    window.GTMStorage?.markStarted?.(currentLevelId);
+    persistInProgress();
+  }
 
   if (gameMode === "view") {
     levelFinished = true;
     maxPanelReached = levels[currentLevelId].panels.length - 1;
-  } else {
-    window.GTMStorage?.markStarted?.(currentLevelId);
   }
 
   window.GTMStorage?.setLastLevelId?.(currentLevelId);
@@ -148,7 +194,6 @@ function loadPanel() {
   panelImage.src = current.src;
   levelIndicator.textContent = `Manga #${currentLevelId + 1}`;
 
-  // overlay coerente col toggle
   if (hintVisible) {
     hintOverlay.textContent = current.hint;
     hintOverlay.classList.remove("hidden");
@@ -159,6 +204,7 @@ function loadPanel() {
 
   updateProgressBar(currentPanel + 1, levels[currentLevelId].panels.length);
   updateButtonVisibility();
+  updateHistoryLockUI();
 }
 
 function updateProgressBar(currentImageIndex, totalImages) {
@@ -169,10 +215,15 @@ function updateProgressBar(currentImageIndex, totalImages) {
 
 function finishLevel(status) {
   levelFinished = true;
+  clearInProgress();
+
   window.GTMStorage?.markFinished?.(currentLevelId, status, attemptsMade);
+
   maxPanelReached = levels[currentLevelId].panels.length - 1;
   currentPanel = Math.min(currentPanel, maxPanelReached);
+
   updateButtonVisibility();
+  updateHistoryLockUI();
 }
 
 function checkAnswer() {
@@ -188,6 +239,7 @@ function checkAnswer() {
   if (isCorrectGuess(currentLevelId, userGuess)) {
     result.textContent = "Correct!";
     result.style.color = "green";
+
     finishLevel("Correct");
 
     setTimeout(() => {
@@ -206,18 +258,14 @@ function checkAnswer() {
     currentPanel = next;
     if (currentPanel > maxPanelReached) maxPanelReached = currentPanel;
 
+    persistInProgress();
     loadPanel();
 
-    setTimeout(() => {
-      result.textContent = "";
-      if (attemptsMade === maxAttempts - 1) {
-        result.textContent = "Last guess!";
-        result.style.color = "orange";
-      }
-    }, 900);
+    setTimeout(() => { result.textContent = ""; }, 900);
   } else {
     result.textContent = "Out of attempts! Level failed.";
     result.style.color = "red";
+
     finishLevel("Failed");
 
     setTimeout(() => {
@@ -228,10 +276,8 @@ function checkAnswer() {
   }
 }
 
-// ✅ Toggle hint: Show ↔ Hide
 function showHint() {
   const hintOverlay = document.getElementById("hint-overlay");
-
   hintVisible = !hintVisible;
 
   if (!hintVisible) {
@@ -243,12 +289,14 @@ function showHint() {
     hintOverlay.classList.remove("hidden");
   }
 
+  persistInProgress();
   updateButtonVisibility();
 }
 
 function previousPanel() {
   if (currentPanel > 0) {
     currentPanel--;
+    persistInProgress();
     loadPanel();
   }
 }
@@ -257,6 +305,7 @@ function nextPanel() {
   const limit = levelFinished ? (levels[currentLevelId].panels.length - 1) : maxPanelReached;
   if (currentPanel < limit) {
     currentPanel++;
+    persistInProgress();
     loadPanel();
   }
 }
@@ -280,7 +329,6 @@ function updateButtonVisibility() {
     hintBtn.classList.add("hidden");
   }
 
-  // testo hint button in base allo stato
   if (!hintBtn.classList.contains("hidden")) {
     hintBtn.textContent = hintVisible ? "Hide Hint" : "Show Hint";
   }
@@ -297,18 +345,21 @@ function updateButtonVisibility() {
       input.disabled = false;
       input.placeholder = "Enter your guess here...";
     }
-
     if (levelFinished) submitBtn.classList.add("hidden");
     else submitBtn.classList.remove("hidden");
   }
 }
 
-function navigateToStatistics() {
+function navigateToStatistics(force = false) {
+  if (!force && gameMode === "play" && !levelFinished && hasInProgressLock()) {
+    alert("Finish this level first (no cheating 😄).");
+    return;
+  }
+
   localStorage.setItem("totalLevels", levels.length);
   window.location.href = "FrontEnd/history.html";
 }
 
-// Enter to submit
 function wireEnterToSubmit() {
   const input = document.getElementById("user-guess");
   if (!input) return;
@@ -325,6 +376,16 @@ localStorage.setItem("totalLevels", levels.length);
 
 window.addEventListener("DOMContentLoaded", () => {
   wireEnterToSubmit();
+  wireHistoryLinkGuard();
+
+  const p = window.GTMStorage?.getInProgress?.();
+  if (p && typeof p.levelId === "number") {
+    currentLevelId = clampLevel(p.levelId);
+    setLevel(currentLevelId);
+    return;
+  }
+
   currentLevelId = resolveInitialLevelId();
   setLevel(currentLevelId);
 });
+
