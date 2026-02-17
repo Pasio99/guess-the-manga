@@ -101,15 +101,10 @@ function isCorrectGuess(levelId, userGuess) {
   return accepted.some(a => normalizeAnswer(a) === g);
 }
 
-function hasInProgressLock() {
-  const p = window.GTMStorage?.getInProgress?.();
-  return !!p && typeof p.levelId === "number";
-}
-
-function persistInProgress() {
+function persistPlayState() {
   if (gameMode !== "play") return;
   if (levelFinished) return;
-  window.GTMStorage?.setInProgress?.(currentLevelId, {
+  window.GTMStorage?.setPlayState?.(currentLevelId, {
     attemptsMade,
     maxPanelReached,
     currentPanel,
@@ -117,22 +112,17 @@ function persistInProgress() {
   });
 }
 
-function clearInProgress() {
-  window.GTMStorage?.clearInProgress?.();
+function clearPlayState() {
+  window.GTMStorage?.clearPlayState?.(currentLevelId);
 }
 
 function updateHistoryLockUI() {
   const a = document.getElementById("history-link");
   if (!a) return;
 
-  const locked = (gameMode === "play" && !levelFinished && hasInProgressLock());
-  if (locked) {
-    a.classList.add("disabled");
-    a.setAttribute("aria-disabled", "true");
-  } else {
-    a.classList.remove("disabled");
-    a.removeAttribute("aria-disabled");
-  }
+  // Ora la history è SEMPRE cliccabile (anti-cheat gestito via playState per-livello).
+  a.classList.remove("disabled");
+  a.removeAttribute("aria-disabled");
 }
 
 function wireHistoryLinkGuard() {
@@ -140,8 +130,9 @@ function wireHistoryLinkGuard() {
   if (!a) return;
 
   a.addEventListener("click", (e) => {
-    e.preventDefault();
-    navigateToStatistics(false);
+    // prima di uscire, salva lo stato corrente del livello in corso
+    persistPlayState();
+    // lascia che il link faccia navigazione normale
   });
 }
 
@@ -149,11 +140,14 @@ function goNextOrHistory() {
   if (currentLevelId < levels.length - 1) {
     setLevel(currentLevelId + 1);
   } else {
-    navigateToStatistics(true);
+    navigateToStatistics();
   }
 }
 
 function setLevel(levelId) {
+  // salva lo stato del livello corrente prima di cambiare
+  persistPlayState();
+
   currentLevelId = clampLevel(levelId);
 
   gameMode = resolveInitialMode();
@@ -165,15 +159,15 @@ function setLevel(levelId) {
   maxPanelReached = 0;
   levelFinished = false;
 
-  const prog = window.GTMStorage?.getInProgress?.();
-  if (gameMode === "play" && prog && Number(prog.levelId) === Number(currentLevelId)) {
-    attemptsMade = prog.attemptsMade || 0;
-    maxPanelReached = prog.maxPanelReached || 0;
-    currentPanel = prog.currentPanel || 0;
-    hintVisible = !!prog.hintVisible;
+  const ps = window.GTMStorage?.getPlayState?.(currentLevelId);
+  if (gameMode === "play" && ps) {
+    attemptsMade = ps.attemptsMade || 0;
+    maxPanelReached = ps.maxPanelReached || 0;
+    currentPanel = ps.currentPanel || 0;
+    hintVisible = !!ps.hintVisible;
   } else if (gameMode === "play") {
     window.GTMStorage?.markStarted?.(currentLevelId);
-    persistInProgress();
+    persistPlayState();
   }
 
   if (gameMode === "view") {
@@ -215,7 +209,7 @@ function updateProgressBar(currentImageIndex, totalImages) {
 
 function finishLevel(status) {
   levelFinished = true;
-  clearInProgress();
+  clearPlayState();
 
   window.GTMStorage?.markFinished?.(currentLevelId, status, attemptsMade);
 
@@ -258,7 +252,7 @@ function checkAnswer() {
     currentPanel = next;
     if (currentPanel > maxPanelReached) maxPanelReached = currentPanel;
 
-    persistInProgress();
+    persistPlayState();
     loadPanel();
 
     setTimeout(() => { result.textContent = ""; }, 900);
@@ -289,14 +283,14 @@ function showHint() {
     hintOverlay.classList.remove("hidden");
   }
 
-  persistInProgress();
+  persistPlayState();
   updateButtonVisibility();
 }
 
 function previousPanel() {
   if (currentPanel > 0) {
     currentPanel--;
-    persistInProgress();
+    persistPlayState();
     loadPanel();
   }
 }
@@ -305,7 +299,7 @@ function nextPanel() {
   const limit = levelFinished ? (levels[currentLevelId].panels.length - 1) : maxPanelReached;
   if (currentPanel < limit) {
     currentPanel++;
-    persistInProgress();
+    persistPlayState();
     loadPanel();
   }
 }
@@ -350,12 +344,9 @@ function updateButtonVisibility() {
   }
 }
 
-function navigateToStatistics(force = false) {
-  if (!force && gameMode === "play" && !levelFinished && hasInProgressLock()) {
-    alert("Finish this level first (no cheating 😄).");
-    return;
-  }
-
+function navigateToStatistics() {
+  // history sempre cliccabile: anti-cheat via playState per-livello
+  persistPlayState();
   localStorage.setItem("totalLevels", levels.length);
   window.location.href = "FrontEnd/history.html";
 }
@@ -372,18 +363,43 @@ function wireEnterToSubmit() {
   });
 }
 
+function wireImageModal() {
+  const img = document.getElementById("manga-panel");
+  const modal = document.getElementById("img-modal");
+  const modalImg = document.getElementById("img-modal-img");
+  const closeBtn = document.getElementById("img-modal-close");
+  const backdrop = document.getElementById("img-modal-backdrop");
+
+  if (!img || !modal || !modalImg || !closeBtn || !backdrop) return;
+
+  function open() {
+    // usa lo stesso src già caricato
+    modalImg.src = img.src;
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function close() {
+    modal.classList.add("hidden");
+    modalImg.src = "";
+    document.body.style.overflow = "";
+  }
+
+  img.style.cursor = "zoom-in";
+  img.addEventListener("click", open);
+  closeBtn.addEventListener("click", close);
+  backdrop.addEventListener("click", close);
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) close();
+  });
+}
+
 localStorage.setItem("totalLevels", levels.length);
 
 window.addEventListener("DOMContentLoaded", () => {
   wireEnterToSubmit();
   wireHistoryLinkGuard();
-
-  const p = window.GTMStorage?.getInProgress?.();
-  if (p && typeof p.levelId === "number") {
-    currentLevelId = clampLevel(p.levelId);
-    setLevel(currentLevelId);
-    return;
-  }
+  wireImageModal();
 
   currentLevelId = resolveInitialLevelId();
   setLevel(currentLevelId);
