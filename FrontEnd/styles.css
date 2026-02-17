@@ -214,17 +214,78 @@ button:active { transform: scale(0.99); }
     z-index: 10;
 }
 
+/* ---------------- IMAGE MODAL ---------------- */
+.img-modal.hidden { display: none; }
+
+.img-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    box-sizing: border-box;
+}
+
+.img-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+}
+
+.img-modal__content {
+    position: relative;
+    z-index: 1;
+    width: min(92vw, 960px);
+    max-height: 86dvh;
+    max-height: 86vh;
+    background: rgba(25,25,25,0.96);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.10);
+}
+
+.img-modal__content img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 86dvh;
+    max-height: 86vh;
+    object-fit: contain;
+    background: #111;
+}
+
+.img-modal__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: rgba(98,0,234,0.92);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.img-modal__close:hover { background: rgba(55,0,179,0.95); }
+
 /* ---------------- MOBILE FIX ---------------- */
 /* Su mobile il problema è il viewport dinamico (barra indirizzi).
-   Usiamo 100dvh e riduciamo l'immagine per far stare SEMPRE i controlli. */
+   Usiamo 100dvh + scroll interno, così i pulsanti restano sempre raggiungibili. */
 @media (max-width: 520px) {
     :root { --header-h: 52px; }
 
     body {
         height: 100dvh;          /* viewport dinamico */
         height: 100vh;           /* fallback */
-        overflow: hidden;
+        overflow: auto;          /* su mobile permettiamo scroll (il body era "clippato") */
         padding: var(--header-h) 0 0 0;
+        -webkit-overflow-scrolling: touch;
     }
 
     header h1 {
@@ -240,18 +301,31 @@ button:active { transform: scale(0.99); }
         padding: 12px;
         gap: 8px;
 
-        /* IMPORTANTISSIMO: usa dvh */
-        height: calc(100dvh - var(--header-h) - 12px);
-        height: calc(100vh - var(--header-h) - 12px);
+        /* IMPORTANTISSIMO: usa dvh ma non bloccare l'utente se qualcosa sfora */
+        min-height: calc(100dvh - var(--header-h) - 12px);
+        min-height: calc(100vh - var(--header-h) - 12px);
+        height: auto;
         margin-top: 8px;
+
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+
+        /* safe area (iPhone) */
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
     }
 
     .level-indicator { font-size: 14px; }
 
-    /* immagine più bassa così i pulsanti non spariscono */
+    /* su mobile non facciamo "stretch" del pannello: i controlli devono rimanere visibili */
+    .panel {
+        flex: 0 0 auto;
+    }
+
+    /* immagine più bassa così i pulsanti non spariscono, ma con un minimo per evitare layout strani */
     #manga-panel {
-        max-height: 30dvh;
-        max-height: 30vh;
+        max-height: 34dvh;
+        max-height: 34vh;
+        width: 100%;
     }
 
     input {
@@ -274,6 +348,17 @@ button:active { transform: scale(0.99); }
         min-width: 130px;
     }
 
+    /* "barra" controlli sempre raggiungibile anche quando si scrolla dentro la card */
+    .button-container {
+        position: sticky;
+        bottom: 0;
+        padding: 8px 0;
+        background: rgba(51,51,51,0.92);
+        backdrop-filter: blur(2px);
+        border-top: 1px solid rgba(255,255,255,0.10);
+        z-index: 5;
+    }
+
     .hint-overlay {
         font-size: 13px;
         padding: 9px;
@@ -283,8 +368,8 @@ button:active { transform: scale(0.99); }
 /* mobile molto piccolo (es. iPhone SE) */
 @media (max-width: 380px) {
     #manga-panel {
-        max-height: 26dvh;
-        max-height: 26vh;
+        max-height: 30dvh;
+        max-height: 30vh;
     }
     .button-container button {
         flex-basis: 120px;
