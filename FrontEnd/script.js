@@ -36,6 +36,12 @@ let levelFinished = false;
 
 let gameMode = "play"; // play | view
 
+// Evita di sovrascrivere lo stato salvato al primo caricamento pagina:
+// setLevel() salva il livello "precedente" tramite persistPlayState().
+// Quando si entra da history, però, non esiste un precedente in questa sessione.
+// Senza questo flag, il playState verrebbe azzerato (attempts=0, panel=0).
+let hasInitializedSession = false;
+
 function clampLevel(id) {
   if (id < 0) return 0;
   if (id >= levels.length) return levels.length - 1;
@@ -145,8 +151,9 @@ function goNextOrHistory() {
 }
 
 function setLevel(levelId) {
-  // salva lo stato del livello corrente prima di cambiare
-  persistPlayState();
+  // salva lo stato del livello corrente prima di cambiare,
+  // ma NON al primissimo caricamento pagina
+  if (hasInitializedSession) persistPlayState();
 
   currentLevelId = clampLevel(levelId);
 
@@ -177,6 +184,9 @@ function setLevel(levelId) {
 
   window.GTMStorage?.setLastLevelId?.(currentLevelId);
   loadPanel();
+
+  // da qui in poi la sessione è inizializzata
+  hasInitializedSession = true;
 }
 
 function loadPanel() {
