@@ -229,12 +229,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const state = window.GTMStorage.load();
-            if (state.inProgress && typeof state.inProgress.levelId === "number") {
-                localStorage.setItem('navigateToLevel', state.inProgress.levelId);
-                localStorage.setItem('navigateMode', 'play');
-                window.location.href = "../index.html";
-                return;
-            }
 
             const historyContainer = document.getElementById('history-container');
             const summaryEl = document.getElementById('summary');
@@ -270,10 +264,17 @@
                 let statusText = "Not played";
                 let attemptsText = "—";
 
+                const inProg = lvl && lvl.playState ? lvl.playState : null;
+
                 if (lvl && lvl.solved) {
                     css = "correct";
                     statusText = "Solved";
                     attemptsText = (typeof lvl.attemptsToSolve === "number") ? `Solved in: ${lvl.attemptsToSolve}` : "Solved";
+                } else if (inProg) {
+                    css = "not-played";
+                    statusText = "In progress";
+                    const a = typeof inProg.attemptsMade === "number" ? inProg.attemptsMade : 0;
+                    attemptsText = `Attempts used: ${a}/4`;
                 } else if (lvl && lvl.played) {
                     css = "failed";
                     statusText = "Failed";
