@@ -49,6 +49,15 @@
         <div class="result" id="result"></div>
     </div>
 
+    <!-- Image modal (tap/click sull'immagine per ingrandire) -->
+    <div id="img-modal" class="img-modal hidden" role="dialog" aria-modal="true" aria-label="Expanded image">
+        <div id="img-modal-backdrop" class="img-modal__backdrop"></div>
+        <div class="img-modal__content">
+            <button id="img-modal-close" class="img-modal__close" aria-label="Close">✕</button>
+            <img id="img-modal-img" src="" alt="Expanded manga panel">
+        </div>
+    </div>
+
     <script src="FrontEnd/storage.js"></script>
     <script src="FrontEnd/script.js"></script>
 </body>
