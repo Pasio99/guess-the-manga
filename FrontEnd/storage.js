@@ -10,7 +10,10 @@
       version: 3,
       levels: {}, // levelId -> data
       lastLevelId: 0,
-      inProgress: null // { levelId, attemptsMade, maxPanelReached, currentPanel, hintVisible }
+      // NOTE: da v3 in poi non blocchiamo più la navigazione con un singolo "inProgress" globale.
+      // Manteniamo la chiave per backward-compatibility (import/export), ma il gioco usa
+      // uno stato per-livello (lvl.playState).
+      inProgress: null
     };
   }
 
@@ -36,7 +39,11 @@
 
       startedAt: null,
       finishedAt: null,
-      durationMs: null
+      durationMs: null,
+
+      // Stato "in corso" per anti-cheat (4 tentativi totali per livello, anche se esci/rientri)
+      // playState è presente SOLO se il livello è in corso e non finito.
+      playState: null // { attemptsMade, maxPanelReached, currentPanel, hintVisible, updatedAt }
     };
   }
 
@@ -196,6 +203,9 @@
     // finito -> nessun inProgress
     state.inProgress = null;
 
+    // finito -> pulisci stato per-livello
+    lvl.playState = null;
+
     save(state);
     return state;
   }
@@ -210,22 +220,63 @@
     return !!state.levels[String(levelId)]?.played;
   }
 
-  function setInProgress(levelId, data) {
+  // ---- Per-level play state (anti-cheat) ----
+  function setPlayState(levelId, data) {
     const state = load();
+    const lvl = getLevel(state, levelId);
+    lvl.playState = {
+      attemptsMade: Math.max(0, Number(data.attemptsMade) || 0),
+      maxPanelReached: Math.max(0, Number(data.maxPanelReached) || 0),
+      currentPanel: Math.max(0, Number(data.currentPanel) || 0),
+      hintVisible: !!data.hintVisible,
+      updatedAt: new Date().toISOString()
+    };
+
+    // Manteniamo anche inProgress per retro-compatibilità con vecchie versioni
+    // (history.html vecchio) ma non viene più usato come "lock".
     state.inProgress = {
       levelId: Number(levelId),
-      attemptsMade: Number(data.attemptsMade) || 0,
-      maxPanelReached: Number(data.maxPanelReached) || 0,
-      currentPanel: Number(data.currentPanel) || 0,
-      hintVisible: !!data.hintVisible
+      attemptsMade: lvl.playState.attemptsMade,
+      maxPanelReached: lvl.playState.maxPanelReached,
+      currentPanel: lvl.playState.currentPanel,
+      hintVisible: lvl.playState.hintVisible
     };
+
     save(state);
     return state;
   }
 
-  function getInProgress() {
+  function getPlayState(levelId) {
     const state = load();
-    return state.inProgress || null;
+    return state.levels[String(levelId)]?.playState || null;
+  }
+
+  function clearPlayState(levelId) {
+    const state = load();
+    const lvl = getLevel(state, levelId);
+    lvl.playState = null;
+
+    // se coincide con il vecchio inProgress, puliscilo
+    if (state.inProgress && Number(state.inProgress.levelId) === Number(levelId)) {
+      state.inProgress = null;
+    }
+
+    save(state);
+    return state;
+  }
+
+  // ---- Backward-compat (vecchie chiamate) ----
+  function setInProgress(levelId, data) {
+    return setPlayState(levelId, data);
+  }
+
+  function getInProgress() {
+    // prova prima il playState per il lastLevel (se esiste), altrimenti fallback.
+    const state = load();
+    if (state?.inProgress && typeof state.inProgress.levelId === "number") {
+      return state.inProgress;
+    }
+    return null;
   }
 
   function clearInProgress() {
@@ -323,6 +374,11 @@
     setInProgress,
     getInProgress,
     clearInProgress,
+
+    // nuovo API
+    setPlayState,
+    getPlayState,
+    clearPlayState,
     computeStats,
     resetAll,
     exportAsJsonString,
