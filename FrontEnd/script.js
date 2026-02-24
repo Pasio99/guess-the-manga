@@ -20,6 +20,22 @@ const levels = [
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "No hint" },
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Target: Shonen" },
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+    ]
+  },
+  {
+    panels: [
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello1.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello2.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello3.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello4.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+    ]
+  },
+  {
+    panels: [
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "prova", answers: ["prova"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
     ]
   }
@@ -414,4 +430,5 @@ window.addEventListener("DOMContentLoaded", () => {
   currentLevelId = resolveInitialLevelId();
   setLevel(currentLevelId);
 });
+
 
