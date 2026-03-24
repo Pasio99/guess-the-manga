@@ -11,32 +11,32 @@ const levels = [
     panels: [
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "No hint" },
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "Target: Shonen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "Not Ended, N° of Tome: 114+, Chapters: 1176+" },
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
     ]
   },
   {
     panels: [
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "No hint" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Target: Shonen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/1.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/2.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/3.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Not Ended, Started in 2022, N° of tome: 13+" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/4.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "The main character hates the world and plays the trumpet, his name is Luca" }
     ]
   },
   {
     panels: [
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello1.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "No hint" },
       { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello2.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Target: Shonen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello3.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello4.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello3.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Not Ended, Started in 2021, N° of tome: 22+" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello4.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Okarun's Golden Balls" }
     ]
   },
   {
     panels: [
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "No hint" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Target: Shonen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Not Ended, N° of Tome: 110, Chapters: 1132" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "prova", answers: ["prova"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/1.png", answer: "The music of Marie", answers: ["Music of Marie", "The Music of Marie, Marie's Music"], hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/2.png", answer: "The music of Marie", answers: ["Music of Marie", "The Music of Marie, Marie's Music"], hint: "Target: Seinen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/3.png", answer: "The music of Marie", answers: ["Music of Marie", "The Music of Marie, Marie's Music"], hint: "Ended, N° of Tome: 2, Chapters: 17, It started in 1999 and ended in 2001" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/4.png", answer: "The music of Marie", answers: ["Music of Marie", "The Music of Marie, Marie's Music"], hint: "The mangaka is Usamaru Furuya, and the manga features a goddess named Marie." }
     ]
   }
 ];
