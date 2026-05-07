@@ -376,3 +376,12 @@ button:active { transform: scale(0.99); }
         min-width: 115px;
     }
 }
+.meta-indicators{display:flex;justify-content:space-between;font-size:13px;opacity:.9;margin-bottom:4px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.history-page{overflow:auto;padding-top:56px}
+.history-container{background:rgba(51,51,51,.92);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:16px;width:92%;max-width:760px;margin:80px auto}
+.toolbar{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
+.warning{background:#5f3e00;color:#ffdca8;padding:10px;border-radius:8px;margin-bottom:12px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}.box{background:#3a3a3a;border-radius:10px;padding:10px}.label{font-size:12px}.value{font-weight:700}
+.history-item{display:flex;justify-content:space-between;gap:10px;background:#444;padding:10px;border-radius:8px;margin:8px 0}.history-item.locked{opacity:.55;cursor:not-allowed}.history-item.playable{border-left:5px solid #8d5cff}.history-item.in-progress{border-left:5px solid #ffc107}.history-item.correct{border-left:5px solid #1db954}.history-item.failed{border-left:5px solid #ff4d4d}
+.home-link img{width:30px}
