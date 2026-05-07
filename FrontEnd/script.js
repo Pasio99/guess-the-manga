@@ -73,6 +73,8 @@ function resolveInitialLevelId() {
   }
 
   const st = window.GTMStorage?.load?.();
+  const inProgressLevel = window.GTMStorage?.getInProgressLevelId?.();
+  if (typeof inProgressLevel === "number") return clampLevel(inProgressLevel);
   const last = st?.lastLevelId ?? 0;
   return clampLevel(last);
 }
@@ -228,7 +230,9 @@ function loadPanel() {
   const levelIndicator = document.getElementById("level-indicator");
   const current = levels[currentLevelId].panels[currentPanel];
 
+  panelImage.classList.add("panel-switch");
   panelImage.src = current.src;
+  requestAnimationFrame(() => panelImage.classList.remove("panel-switch"));
   levelIndicator.textContent = `Manga #${currentLevelId + 1}`;
 
   if (hintVisible) {
@@ -242,6 +246,15 @@ function loadPanel() {
   updateProgressBar(currentPanel + 1, levels[currentLevelId].panels.length);
   updateButtonVisibility();
   updateHistoryLockUI();
+}
+
+
+function setResultMessage(text, type = "info") {
+  const result = document.getElementById("result");
+  if (!result) return;
+  result.textContent = text;
+  result.classList.remove("success", "danger", "info");
+  result.classList.add(type);
 }
 
 function updateProgressBar(currentImageIndex, totalImages) {
@@ -269,18 +282,21 @@ function checkAnswer() {
 
   const input = document.getElementById("user-guess");
   const userGuess = input.value.trim();
-  const result = document.getElementById("result");
+  if (!userGuess) {
+    setResultMessage("Type a manga name first.", "info");
+    return;
+  }
 
   attemptsMade += 1;
+  persistPlayState();
 
   if (isCorrectGuess(currentLevelId, userGuess)) {
-    result.textContent = "Correct!";
-    result.style.color = "green";
+    setResultMessage("Correct!", "success");
 
     finishLevel("Correct");
 
     setTimeout(() => {
-      result.textContent = "";
+      setResultMessage("", "info");
       input.value = "";
       goNextOrHistory();
     }, 900);
@@ -288,8 +304,7 @@ function checkAnswer() {
   }
 
   if (attemptsMade < maxAttempts) {
-    result.textContent = "Wrong answer! Try again.";
-    result.style.color = "red";
+    setResultMessage("Wrong answer! Try again.", "danger");
 
     const next = Math.min(maxPanelReached + 1, levels[currentLevelId].panels.length - 1);
     currentPanel = next;
@@ -298,15 +313,14 @@ function checkAnswer() {
     persistPlayState();
     loadPanel();
 
-    setTimeout(() => { result.textContent = ""; }, 900);
+    setTimeout(() => { setResultMessage("", "info"); }, 900);
   } else {
-    result.textContent = "Out of attempts! Level failed.";
-    result.style.color = "red";
+    setResultMessage("Out of attempts! Level failed.", "danger");
 
     finishLevel("Failed");
 
     setTimeout(() => {
-      result.textContent = "";
+      setResultMessage("", "info");
       input.value = "";
       goNextOrHistory();
     }, 900);

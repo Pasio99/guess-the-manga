@@ -28,6 +28,7 @@
 
   function makeEmptyLevel() {
     return {
+      status: "not_started",
       solved: false,
       solvedAt: null,
       attemptsToSolve: null,
@@ -43,6 +44,7 @@
 
       // Stato "in corso" per anti-cheat (4 tentativi totali per livello, anche se esci/rientri)
       // playState è presente SOLO se il livello è in corso e non finito.
+      failed: false,
       playState: null // { attemptsMade, maxPanelReached, currentPanel, hintVisible, updatedAt }
     };
   }
@@ -160,6 +162,7 @@
       lvl.startedAt = new Date().toISOString();
     }
     lvl.lastPlayedAt = new Date().toISOString();
+    if (lvl.status !== "solved" && lvl.status !== "failed") lvl.status = "in_progress";
     save(state);
     return state;
   }
@@ -169,6 +172,9 @@
     const lvl = getLevel(state, levelId);
 
     lvl.played = true;
+    const stNorm = String(status).toLowerCase();
+    lvl.status = (stNorm === "correct" || stNorm === "solved") ? "solved" : "failed";
+    lvl.failed = lvl.status === "failed";
     lvl.lastStatus = status;
     lvl.lastAttempts = attempts;
     lvl.lastPlayedAt = new Date().toISOString();
@@ -185,6 +191,7 @@
     }
 
     if (String(status).toLowerCase() === "correct") {
+      lvl.failed = false;
       if (!lvl.solved) {
         lvl.solved = true;
         lvl.solvedAt = nowIso;
@@ -196,6 +203,8 @@
           lvl.attemptsToSolve = attempts;
         }
       }
+    } else {
+      lvl.solved = false;
     }
 
     state.lastLevelId = Number(levelId) || 0;
@@ -217,13 +226,17 @@
 
   function isPlayed(levelId) {
     const state = load();
-    return !!state.levels[String(levelId)]?.played;
+    const lvl = state.levels[String(levelId)];
+    if (!lvl) return false;
+    return !!(lvl.played || lvl.solved || lvl.failed || lvl.status === "solved" || lvl.status === "failed");
   }
 
   // ---- Per-level play state (anti-cheat) ----
   function setPlayState(levelId, data) {
     const state = load();
     const lvl = getLevel(state, levelId);
+    if (lvl.status === "solved" || lvl.status === "failed") return state;
+    lvl.status = "in_progress";
     lvl.playState = {
       attemptsMade: Math.max(0, Number(data.attemptsMade) || 0),
       maxPanelReached: Math.max(0, Number(data.maxPanelReached) || 0),
@@ -268,6 +281,14 @@
   // ---- Backward-compat (vecchie chiamate) ----
   function setInProgress(levelId, data) {
     return setPlayState(levelId, data);
+  }
+
+  function getInProgressLevelId() {
+    const state = load();
+    for (const [id,lvl] of Object.entries(state.levels||{})) {
+      if (lvl?.status === "in_progress" && lvl?.playState) return Number(id);
+    }
+    return null;
   }
 
   function getInProgress() {
@@ -372,6 +393,7 @@
     isSolved,
     isPlayed,
     setInProgress,
+    getInProgressLevelId,
     getInProgress,
     clearInProgress,
 
