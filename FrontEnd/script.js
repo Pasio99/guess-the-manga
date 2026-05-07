@@ -1,42 +1,42 @@
 const levels = [
   {
     panels: [
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image1.png", answer: "Naruto", answers: ["Naruto", "ナルト"], hint: "No hint" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image2Naruto.png", answer: "Naruto", answers: ["Naruto", "ナルト"], hint: "Target: Shonen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto3.png", answer: "Naruto", answers: ["Naruto", "ナルト"], hint: "Ended, N° of Tome: 72, Chapters: 700" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto5.png", answer: "Naruto", answers: ["Naruto", "ナルト"], hint: "I'm gonna become Hokage!" }
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image1.png", answer: "Naruto", hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/image2Naruto.png", answer: "Naruto", hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto3.png", answer: "Naruto", hint: "Ended, N° of Tome: 72, Chapters: 700" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Naruto/Naruto5.png", answer: "Naruto", hint: "I'm gonna become Hokage!" }
     ]
   },
   {
     panels: [
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "No hint" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "Target: Shonen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "Not Ended, N° of Tome: 114+, Chapters: 1176+" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "One Piece", answers: ["One Piece", "OnePiece", "ワンピース"], hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op1.png", answer: "One Piece", hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op2.png", answer: "One Piece", hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op3.png", answer: "One Piece", hint: "Not Ended, N° of Tome: 114+, Chapters: 1176+" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/OnePiece/Op4.png", answer: "One Piece", hint: "I'm Luffy! The Man Who Will Become the Pirate King!" }
     ]
   },
   {
     panels: [
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/1.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "No hint" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/2.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Target: Shonen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/3.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "Not Ended, Started in 2022, N° of tome: 13+" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/4.png", answer: "The bugle call", answers: ["The bugle call", "Bugle Call"], hint: "The main character hates the world and plays the trumpet, his name is Luca" }
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/1.png", answer: "The bugle call", hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/2.png", answer: "The bugle call", hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/3.png", answer: "The bugle call", hint: "Not Ended, Started in 2022, N° of tome: 13+" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/BugleCall/4.png", answer: "The bugle call", hint: "The main character hates the world and plays the trumpet, his name is Luca" }
     ]
   },
   {
     panels: [
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello1.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "No hint" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello2.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Target: Shonen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello3.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Not Ended, Started in 2021, N° of tome: 22+" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello4.png", answer: "Dandadan", answers: ["Dandadan", "dan da dan", "dan dadan"], hint: "Okarun's Golden Balls" }
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello1.png", answer: "Dandadan", hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello2.png", answer: "Dandadan", hint: "Target: Shonen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello3.png", answer: "Dandadan", hint: "Not Ended, Started in 2021, N° of tome: 22+" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Dandadan/Livello4.png", answer: "Dandadan", hint: "Okarun's Golden Balls" }
     ]
   },
   {
     panels: [
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/1.png", answer: "The music of Marie", answers: ["Music of Marie", "The Music of Marie, Marie's Music"], hint: "No hint" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/2.png", answer: "The music of Marie", answers: ["Music of Marie", "The Music of Marie, Marie's Music"], hint: "Target: Seinen" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/3.png", answer: "The music of Marie", answers: ["Music of Marie", "The Music of Marie, Marie's Music"], hint: "Ended, N° of Tome: 2, Chapters: 17, It started in 1999 and ended in 2001" },
-      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/4.png", answer: "The music of Marie", answers: ["Music of Marie", "The Music of Marie, Marie's Music"], hint: "The mangaka is Usamaru Furuya, and the manga features a goddess named Marie." }
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/1.png", answer: "The music of Marie", hint: "No hint" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/2.png", answer: "The music of Marie", hint: "Target: Seinen" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/3.png", answer: "The music of Marie", hint: "Ended, N° of Tome: 2, Chapters: 17, It started in 1999 and ended in 2001" },
+      { src: "https://github.com/Pasio99/guess-the-manga/raw/main/immagini/MusicMarie/4.png", answer: "The music of Marie", hint: "The mangaka is Usamaru Furuya, and the manga features a goddess named Marie." }
     ]
   }
 ];
@@ -100,20 +100,37 @@ function normalizeAnswer(s) {
 
 function getAcceptedAnswersForLevel(levelId) {
   const panel = levels[levelId].panels[0];
-  const list = [];
-  if (panel.answers && Array.isArray(panel.answers)) list.push(...panel.answers);
-  if (panel.answer) list.push(panel.answer);
+  return panel?.answer ? [panel.answer] : [];
+}
 
+function getAutocompleteAnswers() {
   const seen = new Set();
   const out = [];
-  for (const a of list) {
-    const n = normalizeAnswer(a);
-    if (!n) continue;
-    if (seen.has(n)) continue;
-    seen.add(n);
-    out.push(a);
+
+  for (const level of levels) {
+    const base = level?.panels?.[0]?.answer;
+    const normalized = normalizeAnswer(base);
+    if (!normalized || seen.has(normalized)) continue;
+    seen.add(normalized);
+    out.push(base);
   }
+
   return out;
+}
+
+function wireAnswerAutocomplete() {
+  const input = document.getElementById("user-guess");
+  const datalist = document.getElementById("answer-suggestions");
+  if (!input || !datalist) return;
+
+  const autocompleteAnswers = getAutocompleteAnswers();
+  datalist.innerHTML = "";
+
+  for (const answer of autocompleteAnswers) {
+    const option = document.createElement("option");
+    option.value = answer;
+    datalist.appendChild(option);
+  }
 }
 
 function isCorrectGuess(levelId, userGuess) {
@@ -424,6 +441,7 @@ localStorage.setItem("totalLevels", levels.length);
 
 window.addEventListener("DOMContentLoaded", () => {
   wireEnterToSubmit();
+  wireAnswerAutocomplete();
   wireHistoryLinkGuard();
   wireImageModal();
 
