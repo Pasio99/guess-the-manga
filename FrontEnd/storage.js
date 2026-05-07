@@ -1,387 +1,168 @@
-// FrontEnd/storage.js
-// Stato persistente (localStorage) + Export/Import JSON
-// Espone window.GTMStorage
-
 (() => {
-  const KEY = "gtm_progress_v2";
+  const KEY = "gtm_progress_v4";
+  const LEGACY_KEYS = ["gtm_progress_v3", "gtm_progress_v2", "gtm_progress_v1"];
 
-  function defaultState() {
+  const MAX_ATTEMPTS = 4;
+
+  function nowIso() { return new Date().toISOString(); }
+  function safeParse(raw, fallback = null) { try { return JSON.parse(raw); } catch { return fallback; } }
+
+  function makeLevelState() {
     return {
-      version: 3,
-      levels: {}, // levelId -> data
-      lastLevelId: 0,
-      // NOTE: da v3 in poi non blocchiamo più la navigazione con un singolo "inProgress" globale.
-      // Manteniamo la chiave per backward-compatibility (import/export), ma il gioco usa
-      // uno stato per-livello (lvl.playState).
-      inProgress: null
-    };
-  }
-
-  function safeParse(json, fallback) {
-    try {
-      const x = JSON.parse(json);
-      return x ?? fallback;
-    } catch {
-      return fallback;
-    }
-  }
-
-  function makeEmptyLevel() {
-    return {
-      solved: false,
-      solvedAt: null,
-      attemptsToSolve: null,
-
-      played: false,
-      lastStatus: null,     // "Correct" | "Failed"
-      lastAttempts: null,
-      lastPlayedAt: null,
-
+      status: "not_started",
+      attemptsMade: 0,
+      maxPanelReached: 0,
+      currentPanel: 0,
+      hintVisible: false,
       startedAt: null,
+      updatedAt: null,
       finishedAt: null,
       durationMs: null,
-
-      // Stato "in corso" per anti-cheat (4 tentativi totali per livello, anche se esci/rientri)
-      // playState è presente SOLO se il livello è in corso e non finito.
-      playState: null // { attemptsMade, maxPanelReached, currentPanel, hintVisible, updatedAt }
+      attemptsToSolve: null,
+      lastStatus: null
     };
   }
 
-  function migrateFromLegacyKeys(state) {
-    const hasSomeLevel = state && state.levels && Object.keys(state.levels).length > 0;
-    if (hasSomeLevel) return state;
-
-    const resultLog = safeParse(localStorage.getItem("resultLog") || "[]", []);
-    if (Array.isArray(resultLog) && resultLog.length > 0) {
-      for (let i = 0; i < resultLog.length; i++) {
-        const r = resultLog[i];
-        if (!r) continue;
-
-        const id = String(i);
-        state.levels[id] ??= makeEmptyLevel();
-
-        state.levels[id].played = true;
-        state.levels[id].lastStatus = r.status;
-        state.levels[id].lastAttempts = r.attempts ?? null;
-        state.levels[id].lastPlayedAt = new Date().toISOString();
-
-        if (String(r.status).toLowerCase() === "correct") {
-          state.levels[id].solved = true;
-          state.levels[id].solvedAt = state.levels[id].solvedAt ?? new Date().toISOString();
-          state.levels[id].attemptsToSolve = state.levels[id].attemptsToSolve ?? (r.attempts ?? null);
-        }
-      }
-    }
-
-    const oldLevel = localStorage.getItem("currentLevel");
-    if (oldLevel !== null) {
-      const n = parseInt(oldLevel, 10);
-      if (!Number.isNaN(n)) state.lastLevelId = n;
-    }
-
-    return state;
+  function defaultState() {
+    return { version: 4, installId: crypto.randomUUID(), tampered: false, integrity: null, lastLevelId: 0, levels: {} };
   }
 
-  function migrateFromV1IfPresent() {
-    const v1raw = localStorage.getItem("gtm_progress_v1");
-    if (!v1raw) return null;
+  function canonicalize(state) {
+    const c = JSON.parse(JSON.stringify(state));
+    delete c.integrity;
+    return JSON.stringify(c);
+  }
 
-    const v1 = safeParse(v1raw, null);
-    if (!v1 || typeof v1 !== "object" || !v1.levels) return null;
+  async function computeIntegrity(state) {
+    const data = new TextEncoder().encode(canonicalize(state));
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
 
+  function normalizeLevel(lvl) {
+    const out = makeLevelState();
+    Object.assign(out, lvl || {});
+    out.attemptsMade = Math.min(MAX_ATTEMPTS, Math.max(0, Number(out.attemptsMade) || 0));
+    out.maxPanelReached = Math.max(0, Number(out.maxPanelReached) || 0);
+    out.currentPanel = Math.max(0, Number(out.currentPanel) || 0);
+    out.hintVisible = !!out.hintVisible;
+    if (!["not_started", "in_progress", "solved", "failed"].includes(out.status)) out.status = "not_started";
+    if (!["Correct", "Failed", null].includes(out.lastStatus)) out.lastStatus = null;
+    return out;
+  }
+
+  function coerce(raw) {
     const st = defaultState();
-    st.lastLevelId = typeof v1.lastLevelId === "number" ? v1.lastLevelId : 0;
-
-    for (const [k, v] of Object.entries(v1.levels)) {
-      st.levels[k] = {
-        ...makeEmptyLevel(),
-        solved: !!v.solved,
-        solvedAt: v.solvedAt ?? null,
-        attemptsToSolve: typeof v.attemptsToSolve === "number" ? v.attemptsToSolve : null,
-        played: !!v.played,
-        lastStatus: v.lastStatus ?? null,
-        lastAttempts: typeof v.lastAttempts === "number" ? v.lastAttempts : null,
-        lastPlayedAt: v.lastPlayedAt ?? null,
-
-        startedAt: v.startedAt ?? null,
-        finishedAt: v.finishedAt ?? null,
-        durationMs: typeof v.durationMs === "number" ? v.durationMs : null
-      };
+    if (!raw || typeof raw !== "object") return st;
+    st.installId = typeof raw.installId === "string" && raw.installId ? raw.installId : st.installId;
+    st.lastLevelId = Math.max(0, Number(raw.lastLevelId) || 0);
+    st.tampered = !!raw.tampered;
+    if (raw.levels && typeof raw.levels === "object") {
+      for (const [k, v] of Object.entries(raw.levels)) st.levels[k] = normalizeLevel(v);
     }
-
     return st;
   }
 
-  function load() {
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
-      let st = safeParse(raw, defaultState());
-      if (!st || typeof st !== "object") st = defaultState();
-      if (!st.levels) st.levels = {};
-      if (typeof st.lastLevelId !== "number") st.lastLevelId = 0;
-      if (typeof st.version !== "number") st.version = 3;
-      if (!("inProgress" in st)) st.inProgress = null;
+  function migrateLegacy() {
+    for (const k of LEGACY_KEYS) {
+      const raw = localStorage.getItem(k);
+      if (!raw) continue;
+      const old = safeParse(raw, {});
+      const st = defaultState();
+      st.lastLevelId = Number(old.lastLevelId) || 0;
+      for (const [id, val] of Object.entries(old.levels || {})) {
+        const lvl = makeLevelState();
+        if (val.playState) {
+          lvl.status = "in_progress";
+          lvl.attemptsMade = Number(val.playState.attemptsMade) || 0;
+          lvl.maxPanelReached = Number(val.playState.maxPanelReached) || 0;
+          lvl.currentPanel = Number(val.playState.currentPanel) || 0;
+          lvl.hintVisible = !!val.playState.hintVisible;
+        } else if (val.solved) {
+          lvl.status = "solved"; lvl.lastStatus = "Correct"; lvl.attemptsToSolve = val.attemptsToSolve ?? null;
+        } else if (val.played) {
+          lvl.status = "failed"; lvl.lastStatus = "Failed";
+        }
+        lvl.startedAt = val.startedAt ?? null;
+        lvl.finishedAt = val.finishedAt ?? null;
+        lvl.durationMs = val.durationMs ?? null;
+        st.levels[id] = normalizeLevel(lvl);
+      }
       return st;
     }
+    return defaultState();
+  }
 
-    const migratedV1 = migrateFromV1IfPresent();
-    if (migratedV1) {
-      localStorage.setItem(KEY, JSON.stringify(migratedV1));
-      return migratedV1;
+  async function load() {
+    let st = coerce(safeParse(localStorage.getItem(KEY), null) || migrateLegacy());
+    const storedIntegrity = safeParse(localStorage.getItem(KEY), {})?.integrity || null;
+    const computed = await computeIntegrity(st);
+    if (storedIntegrity && storedIntegrity !== computed) st.tampered = true;
+    st.integrity = await computeIntegrity(st);
+    localStorage.setItem(KEY, JSON.stringify(st));
+    return st;
+  }
+
+  async function save(state) {
+    const st = coerce(state);
+    st.integrity = await computeIntegrity(st);
+    localStorage.setItem(KEY, JSON.stringify(st));
+    return st;
+  }
+
+  async function mutate(fn) { const st = await load(); fn(st); return save(st); }
+
+  async function startLevel(levelId) {
+    return mutate(st => {
+      const id = String(levelId); st.levels[id] ??= makeLevelState(); const lvl = st.levels[id];
+      if (lvl.status === "solved" || lvl.status === "failed") return;
+      if (lvl.status === "not_started") lvl.startedAt = nowIso();
+      lvl.status = "in_progress"; lvl.updatedAt = nowIso(); st.lastLevelId = Number(levelId) || 0;
+    });
+  }
+
+  async function savePlayState(levelId, data) {
+    return mutate(st => {
+      const id = String(levelId); st.levels[id] ??= makeLevelState(); const lvl = st.levels[id];
+      if (lvl.status === "solved" || lvl.status === "failed") return;
+      lvl.status = "in_progress";
+      lvl.attemptsMade = Math.min(MAX_ATTEMPTS, Math.max(0, Number(data.attemptsMade) || lvl.attemptsMade));
+      lvl.maxPanelReached = Math.max(lvl.maxPanelReached, Math.max(0, Number(data.maxPanelReached) || 0));
+      lvl.currentPanel = Math.max(0, Number(data.currentPanel) || 0);
+      lvl.hintVisible = !!data.hintVisible;
+      lvl.updatedAt = nowIso(); if (!lvl.startedAt) lvl.startedAt = lvl.updatedAt; st.lastLevelId = Number(levelId) || 0;
+    });
+  }
+
+  async function finishLevel(levelId, status) {
+    return mutate(st => {
+      const id = String(levelId); st.levels[id] ??= makeLevelState(); const lvl = st.levels[id];
+      const end = nowIso(); if (!lvl.startedAt) lvl.startedAt = end;
+      lvl.finishedAt = end; lvl.updatedAt = end;
+      lvl.durationMs = Math.max(0, Date.parse(end) - Date.parse(lvl.startedAt));
+      if (status === "Correct") { lvl.status = "solved"; lvl.lastStatus = "Correct"; lvl.attemptsToSolve = lvl.attemptsMade; }
+      else { lvl.status = "failed"; lvl.lastStatus = "Failed"; }
+    });
+  }
+
+  async function getLevelState(levelId) { const st = await load(); return normalizeLevel(st.levels[String(levelId)] || makeLevelState()); }
+  async function isViewOnly(levelId) { const s = await getLevelState(levelId); return s.status === "solved" || s.status === "failed"; }
+  async function canPlayLevel(levelId, totalLevels) { return (await getFirstPlayableLevel(totalLevels)) === Number(levelId) || (await getLevelState(levelId)).status === "in_progress"; }
+  async function getFirstPlayableLevel(totalLevels) {
+    const st = await load();
+    for (let i = 0; i < totalLevels; i++) {
+      const lvl = normalizeLevel(st.levels[String(i)] || makeLevelState());
+      if (lvl.status === "in_progress") return i;
+      if (lvl.status === "not_started") return i;
     }
-
-    let state = defaultState();
-    state = migrateFromLegacyKeys(state);
-    localStorage.setItem(KEY, JSON.stringify(state));
-    return state;
+    return -1;
+  }
+  async function computeStats(totalLevels) {
+    const st = await load();
+    let solved = 0, failed = 0, inProgress = 0;
+    for (let i = 0; i < totalLevels; i++) { const s = normalizeLevel(st.levels[String(i)] || {}); if (s.status === "solved") solved++; else if (s.status === "failed") failed++; else if (s.status === "in_progress") inProgress++; }
+    return { solved, failed, inProgress, totalLevels, tampered: st.tampered };
   }
 
-  function save(state) {
-    localStorage.setItem(KEY, JSON.stringify(state));
-  }
-
-  function getLevel(state, levelId) {
-    const id = String(levelId);
-    state.levels[id] ??= makeEmptyLevel();
-    return state.levels[id];
-  }
-
-  function setLastLevelId(levelId) {
-    const state = load();
-    state.lastLevelId = Number(levelId) || 0;
-    save(state);
-  }
-
-  function markStarted(levelId) {
-    const state = load();
-    const lvl = getLevel(state, levelId);
-
-    if (!lvl.startedAt) {
-      lvl.startedAt = new Date().toISOString();
-    }
-    lvl.lastPlayedAt = new Date().toISOString();
-    save(state);
-    return state;
-  }
-
-  function markFinished(levelId, status, attempts) {
-    const state = load();
-    const lvl = getLevel(state, levelId);
-
-    lvl.played = true;
-    lvl.lastStatus = status;
-    lvl.lastAttempts = attempts;
-    lvl.lastPlayedAt = new Date().toISOString();
-
-    const nowIso = new Date().toISOString();
-    lvl.finishedAt = nowIso;
-
-    if (!lvl.startedAt) lvl.startedAt = nowIso;
-
-    const started = Date.parse(lvl.startedAt);
-    const finished = Date.parse(lvl.finishedAt);
-    if (!Number.isNaN(started) && !Number.isNaN(finished)) {
-      lvl.durationMs = Math.max(0, finished - started);
-    }
-
-    if (String(status).toLowerCase() === "correct") {
-      if (!lvl.solved) {
-        lvl.solved = true;
-        lvl.solvedAt = nowIso;
-        lvl.attemptsToSolve = attempts;
-      } else {
-        if (typeof lvl.attemptsToSolve === "number") {
-          lvl.attemptsToSolve = Math.min(lvl.attemptsToSolve, attempts);
-        } else {
-          lvl.attemptsToSolve = attempts;
-        }
-      }
-    }
-
-    state.lastLevelId = Number(levelId) || 0;
-
-    // finito -> nessun inProgress
-    state.inProgress = null;
-
-    // finito -> pulisci stato per-livello
-    lvl.playState = null;
-
-    save(state);
-    return state;
-  }
-
-  function isSolved(levelId) {
-    const state = load();
-    return !!state.levels[String(levelId)]?.solved;
-  }
-
-  function isPlayed(levelId) {
-    const state = load();
-    return !!state.levels[String(levelId)]?.played;
-  }
-
-  // ---- Per-level play state (anti-cheat) ----
-  function setPlayState(levelId, data) {
-    const state = load();
-    const lvl = getLevel(state, levelId);
-    lvl.playState = {
-      attemptsMade: Math.max(0, Number(data.attemptsMade) || 0),
-      maxPanelReached: Math.max(0, Number(data.maxPanelReached) || 0),
-      currentPanel: Math.max(0, Number(data.currentPanel) || 0),
-      hintVisible: !!data.hintVisible,
-      updatedAt: new Date().toISOString()
-    };
-
-    // Manteniamo anche inProgress per retro-compatibilità con vecchie versioni
-    // (history.html vecchio) ma non viene più usato come "lock".
-    state.inProgress = {
-      levelId: Number(levelId),
-      attemptsMade: lvl.playState.attemptsMade,
-      maxPanelReached: lvl.playState.maxPanelReached,
-      currentPanel: lvl.playState.currentPanel,
-      hintVisible: lvl.playState.hintVisible
-    };
-
-    save(state);
-    return state;
-  }
-
-  function getPlayState(levelId) {
-    const state = load();
-    return state.levels[String(levelId)]?.playState || null;
-  }
-
-  function clearPlayState(levelId) {
-    const state = load();
-    const lvl = getLevel(state, levelId);
-    lvl.playState = null;
-
-    // se coincide con il vecchio inProgress, puliscilo
-    if (state.inProgress && Number(state.inProgress.levelId) === Number(levelId)) {
-      state.inProgress = null;
-    }
-
-    save(state);
-    return state;
-  }
-
-  // ---- Backward-compat (vecchie chiamate) ----
-  function setInProgress(levelId, data) {
-    return setPlayState(levelId, data);
-  }
-
-  function getInProgress() {
-    // prova prima il playState per il lastLevel (se esiste), altrimenti fallback.
-    const state = load();
-    if (state?.inProgress && typeof state.inProgress.levelId === "number") {
-      return state.inProgress;
-    }
-    return null;
-  }
-
-  function clearInProgress() {
-    const state = load();
-    state.inProgress = null;
-    save(state);
-    return state;
-  }
-
-  function computeStats(totalLevels) {
-    const state = load();
-    const N = Math.max(0, Number(totalLevels) || 0);
-
-    let solvedCount = 0;
-    let durations = [];
-
-    for (let i = 0; i < N; i++) {
-      const lvl = state.levels[String(i)];
-      if (lvl?.solved) {
-        solvedCount += 1;
-        if (typeof lvl.durationMs === "number") durations.push(lvl.durationMs);
-      }
-    }
-
-    let streak = 0;
-    for (let i = 0; i < N; i++) {
-      const lvl = state.levels[String(i)];
-      if (lvl?.solved) streak += 1;
-      else break;
-    }
-
-    const completionPct = N > 0 ? (solvedCount / N) * 100 : 0;
-    const avgMs = durations.length > 0
-      ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
-      : null;
-
-    return { solvedCount, totalLevels: N, completionPct, streak, avgMs };
-  }
-
-  function resetAll() {
-    localStorage.removeItem(KEY);
-    localStorage.removeItem("gtm_progress_v1");
-
-    localStorage.removeItem("currentLevel");
-    localStorage.removeItem("currentPanel");
-    localStorage.removeItem("attempts");
-    localStorage.removeItem("levelCompleted");
-    localStorage.removeItem("maxPanelReached");
-    localStorage.removeItem("completedLevels");
-    localStorage.removeItem("resultLog");
-    localStorage.removeItem("navigateToLevel");
-    localStorage.removeItem("navigateMode");
-    localStorage.removeItem("totalLevels");
-  }
-
-  function exportAsJsonString() {
-    const state = load();
-    return JSON.stringify(
-      {
-        exportedAt: new Date().toISOString(),
-        key: KEY,
-        data: state
-      },
-      null,
-      2
-    );
-  }
-
-  function importFromJsonString(jsonString) {
-    const obj = safeParse(jsonString, null);
-    if (!obj || typeof obj !== "object") throw new Error("Invalid JSON file.");
-
-    const maybeState = obj.data ?? obj;
-    if (!maybeState || typeof maybeState !== "object") throw new Error("Invalid state.");
-    if (!maybeState.levels || typeof maybeState.levels !== "object") throw new Error("Missing levels.");
-
-    if (typeof maybeState.version !== "number") maybeState.version = 3;
-    if (typeof maybeState.lastLevelId !== "number") maybeState.lastLevelId = 0;
-    if (!("inProgress" in maybeState)) maybeState.inProgress = null;
-
-    localStorage.setItem(KEY, JSON.stringify(maybeState));
-    return maybeState;
-  }
-
-  window.GTMStorage = {
-    KEY,
-    load,
-    save,
-    getLevel,
-    setLastLevelId,
-    markStarted,
-    markFinished,
-    isSolved,
-    isPlayed,
-    setInProgress,
-    getInProgress,
-    clearInProgress,
-
-    // nuovo API
-    setPlayState,
-    getPlayState,
-    clearPlayState,
-    computeStats,
-    resetAll,
-    exportAsJsonString,
-    importFromJsonString
-  };
+  window.GTMStorage = { KEY, load, save, startLevel, savePlayState, finishLevel, getLevelState, canPlayLevel, isViewOnly, getFirstPlayableLevel, computeStats, exportAsJsonString: async()=>JSON.stringify(await load(),null,2) };
 })();
