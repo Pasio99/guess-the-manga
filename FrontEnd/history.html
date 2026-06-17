@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Manga - Your Statistics</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 60px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        header {
+            background-color: #6200ea;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            letter-spacing: 0.4px;
+            margin: 0;
+            margin-left: 10px;
+        }
+
+        .home-link {
+            margin-right: 16px;
+        }
+
+        .home-link img {
+            width: 30px;
+            height: auto;
+        }
+
+        .history-container {
+            background: #333333;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .toolbar button {
+            background: #6200ea;
+            color: #fff;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .toolbar button.secondary {
+            background: #444;
+        }
+
+        .toolbar button:hover {
+            opacity: 0.9;
+        }
+
+        .summary {
+            background: #2b2b2b;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            text-align: left;
+        }
+
+        .summary .box {
+            background: #3a3a3a;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .summary .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .summary .value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background-color: #444444;
+            cursor: pointer;
+            gap: 10px;
+        }
+
+        .history-item:hover {
+            background-color: #555555;
+        }
+
+        .history-item .level {
+            font-weight: 700;
+            text-align: left;
+            flex: 1;
+        }
+
+        .history-item .attempts {
+            opacity: 0.85;
+            white-space: nowrap;
+        }
+
+        .history-item .status {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .correct { border-left: 6px solid #1db954; }
+        .failed { border-left: 6px solid #ff4d4d; }
+        .not-played { border-left: 6px solid #888; }
+
+        .hint {
+            opacity: 0.8;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 520px) {
+            header h1 { font-size: 26px; }
+            .history-container { width: 92%; padding: 16px; }
+            .summary { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="../index.html" class="home-link" aria-label="Home">
+            <img src="https://github.com/Pasio99/guess-the-manga/raw/main/immagini/Altro/home.png" alt="Home">
+        </a>
+        <h1>Your Statistics</h1>
+    </header>
+
+    <div class="history-container">
+        <div class="toolbar">
+            <button id="export-btn">Export progress (JSON)</button>
+            <button id="import-btn" class="secondary">Import progress (JSON)</button>
+            <input id="import-file" type="file" accept="application/json" style="display:none;">
+        </div>
+
+        <div class="hint">
+            Tip: you can click any level to start from there.
+        </div>
+
+        <div id="summary" class="summary" style="display:none;"></div>
+
+        <div id="history-container"></div>
+    </div>
+
+    <script src="storage.js"></script>
+
+    <script>
+        function navigateToLevel(level, mode) {
+          localStorage.setItem('navigateToLevel', level);
+          localStorage.setItem('navigateMode', mode || 'play'); // play | view
+          window.location.href = "../index.html";
+        }
+
+        function downloadText(filename, text) {
+            const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function formatMs(ms) {
+            if (ms === null || ms === undefined) return "—";
+            const totalSec = Math.round(ms / 1000);
+            const m = Math.floor(totalSec / 60);
+            const s = totalSec % 60;
+            if (m <= 0) return `${s}s`;
+            return `${m}m ${s}s`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = window.GTMStorage.load();
+
+            const historyContainer = document.getElementById('history-container');
+            const summaryEl = document.getElementById('summary');
+
+            const totalLevels = parseInt(localStorage.getItem('totalLevels'), 10) || 0;
+            const safeTotal = totalLevels > 0 ? totalLevels : Object.keys(state.levels).length;
+
+            const stats = window.GTMStorage.computeStats(safeTotal);
+            summaryEl.style.display = "grid";
+            summaryEl.innerHTML = `
+                <div class="box">
+                    <div class="label">Completion</div>
+                    <div class="value">${stats.totalLevels ? stats.completionPct.toFixed(0) : 0}%</div>
+                </div>
+                <div class="box">
+                    <div class="label">Streak</div>
+                    <div class="value">${stats.streak}</div>
+                </div>
+                <div class="box">
+                    <div class="label">Avg time (solved)</div>
+                    <div class="value">${formatMs(stats.avgMs)}</div>
+                </div>
+            `;
+
+            historyContainer.innerHTML = "";
+            for (let i = 0; i < safeTotal; i++) {
+                const lvl = state.levels[String(i)] || null;
+
+                const item = document.createElement('div');
+                item.classList.add('history-item');
+
+                let css = "not-played";
+                let statusText = "Not played";
+                let attemptsText = "—";
+
+                const inProg = lvl && lvl.playState ? lvl.playState : null;
+
+                if (lvl && lvl.solved) {
+                    css = "correct";
+                    statusText = "Solved";
+                    attemptsText = (typeof lvl.attemptsToSolve === "number") ? `Solved in: ${lvl.attemptsToSolve}` : "Solved";
+                } else if (inProg) {
+                    css = "not-played";
+                    statusText = "In progress";
+                    const a = typeof inProg.attemptsMade === "number" ? inProg.attemptsMade : 0;
+                    attemptsText = `Attempts used: ${a}/4`;
+                } else if (lvl && lvl.played) {
+                    css = "failed";
+                    statusText = "Failed";
+                    attemptsText = (typeof lvl.lastAttempts === "number") ? `Attempts: ${lvl.lastAttempts}` : "Attempts: —";
+                }
+
+                item.classList.add(css);
+
+                const levelSpan = document.createElement('span');
+                levelSpan.classList.add('level');
+                levelSpan.textContent = `Level ${i + 1}`;
+
+                const attemptsSpan = document.createElement('span');
+                attemptsSpan.classList.add('attempts');
+                attemptsSpan.textContent = attemptsText;
+
+                const statusSpan = document.createElement('span');
+                statusSpan.classList.add('status');
+                statusSpan.textContent = statusText;
+
+                item.appendChild(levelSpan);
+                item.appendChild(attemptsSpan);
+                item.appendChild(statusSpan);
+
+                const isPlayed = !!(lvl && lvl.played);
+                const mode = isPlayed ? "view" : "play";
+
+                item.addEventListener('click', () => navigateToLevel(i, mode));
+                historyContainer.appendChild(item);
+            }
+
+            document.getElementById("export-btn").addEventListener("click", () => {
+                const json = window.GTMStorage.exportAsJsonString();
+                const ts = new Date().toISOString().replaceAll(":", "-");
+                downloadText(`guess-the-manga-progress-${ts}.json`, json);
+            });
+
+            const importBtn = document.getElementById("import-btn");
+            const importFile = document.getElementById("import-file");
+
+            importBtn.addEventListener("click", () => importFile.click());
+
+            importFile.addEventListener("change", async (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    window.GTMStorage.importFromJsonString(text);
+                    window.location.reload();
+                } catch (err) {
+                    alert("Import failed: " + (err && err.message ? err.message : String(err)));
+                } finally {
+                    importFile.value = "";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
