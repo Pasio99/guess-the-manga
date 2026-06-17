@@ -1,0 +1,33 @@
+{
+  "name": "guess-the-manga-modern",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Modern local-first rewrite of Guess the Manga: React, TypeScript, IndexedDB, four real attempts per level.",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "npm run test && npm run build"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.2",
+    "@playwright/test": "^1.60.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.9",
+    "@types/node": "^24.0.0"
+  }
+}
