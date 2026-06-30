@@ -17,7 +17,7 @@ class ResilientProgressStore implements ProgressStore {
     try {
       return await this.primary.load();
     } catch (error) {
-      console.warn('IndexedDB non disponibile, uso localStorage fallback.', error);
+      console.warn('IndexedDB unavailable, using localStorage fallback.', error);
       this.useFallback = true;
       return this.fallback.load();
     }
@@ -28,7 +28,7 @@ class ResilientProgressStore implements ProgressStore {
     try {
       return await this.primary.save(progress);
     } catch (error) {
-      console.warn('Salvataggio IndexedDB fallito, uso localStorage fallback.', error);
+      console.warn('IndexedDB save failed, using localStorage fallback.', error);
       this.useFallback = true;
       return this.fallback.save(progress);
     }
@@ -39,7 +39,7 @@ class ResilientProgressStore implements ProgressStore {
     try {
       return await this.primary.clear();
     } catch (error) {
-      console.warn('Reset IndexedDB fallito, uso localStorage fallback.', error);
+      console.warn('IndexedDB reset failed, using localStorage fallback.', error);
       this.useFallback = true;
       return this.fallback.clear();
     }
@@ -54,7 +54,7 @@ class ResilientProgressStore implements ProgressStore {
     try {
       return await this.primary.importJson(jsonText);
     } catch (error) {
-      console.warn('Import IndexedDB fallito, uso localStorage fallback.', error);
+      console.warn('IndexedDB import failed, using localStorage fallback.', error);
       this.useFallback = true;
       return this.fallback.importJson(jsonText);
     }

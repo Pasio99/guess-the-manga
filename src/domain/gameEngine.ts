@@ -129,7 +129,7 @@ export function submitAnswer(level: Level, progress: LevelProgress, answer: stri
       progress,
       correct: true,
       consumedAttempt: false,
-      message: 'Livello già risolto: puoi rivederlo, ma non consumare altri tentativi.'
+      message: 'Level already solved: you can review it, but you cannot spend more attempts.'
     };
   }
 
@@ -138,7 +138,7 @@ export function submitAnswer(level: Level, progress: LevelProgress, answer: stri
       progress,
       correct: false,
       consumedAttempt: false,
-      message: 'Livello già concluso: i 4 tentativi sono stati usati.'
+      message: 'Level already finished: all 4 attempts have been used.'
     };
   }
 
@@ -147,7 +147,7 @@ export function submitAnswer(level: Level, progress: LevelProgress, answer: stri
       progress: finalizeLevel(progress, 'failed', null),
       correct: false,
       consumedAttempt: false,
-      message: 'Tentativi terminati.'
+      message: 'No attempts left.'
     };
   }
 
@@ -187,7 +187,7 @@ export function submitAnswer(level: Level, progress: LevelProgress, answer: stri
       ),
       correct: true,
       consumedAttempt: true,
-      message: `Corretto! Risolto in ${attemptNumber}/4 tentativi.`
+      message: `Correct! Solved in ${attemptNumber}/4 attempts.`
     };
   }
 
@@ -204,7 +204,7 @@ export function submitAnswer(level: Level, progress: LevelProgress, answer: stri
       ),
       correct: false,
       consumedAttempt: true,
-      message: 'Risposta sbagliata. I 4 tentativi sono finiti.'
+      message: 'Wrong answer. All 4 attempts are gone.'
     };
   }
 
@@ -218,7 +218,7 @@ export function submitAnswer(level: Level, progress: LevelProgress, answer: stri
     },
     correct: false,
     consumedAttempt: true,
-    message: `Risposta sbagliata. Tentativo ${attemptNumber}/4 consumato.`
+    message: `Wrong answer. Attempt ${attemptNumber}/4 used.`
   };
 }
 

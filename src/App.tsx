@@ -129,12 +129,12 @@ export function App() {
         setLastResult(null);
       }
     } catch (error) {
-      window.alert(`Import fallito: ${error instanceof Error ? error.message : String(error)}`);
+      window.alert(`Import failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }, []);
 
   const resetProgress = useCallback(async () => {
-    const ok = window.confirm('Vuoi davvero cancellare tutti i progressi locali?');
+    const ok = window.confirm('Do you really want to delete all local progress?');
     if (!ok) return;
     await storeRef.current?.clear();
     const fresh = startOrResumeLevel(createInitialProgress(), firstLevelId);
@@ -147,7 +147,7 @@ export function App() {
     return (
       <div className="loading-screen">
         <div className="loader" />
-        <p>Caricamento progressi…</p>
+        <p>Loading progress…</p>
       </div>
     );
   }

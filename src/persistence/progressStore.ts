@@ -11,8 +11,8 @@ export interface ProgressStore {
 
 const INTEGRITY_PREFIX = 'gtm-modern-local-integrity-v1';
 
-// Nota anti-cheat: questa firma serve a scoprire alterazioni accidentali o casuali del salvataggio.
-// Non è sicurezza crittografica forte, perché in una app 100% client-side anche il codice è nelle mani dell'utente.
+// Anti-cheat note: this signature detects accidental or casual save tampering.
+// It is not strong cryptographic security, because in a 100% client-side app the code is also in the user's hands.
 export async function signProgress(progress: PlayerProgress): Promise<string> {
   const clean: PlayerProgress = {
     ...progress,
@@ -27,8 +27,8 @@ export async function signProgress(progress: PlayerProgress): Promise<string> {
     return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
   }
 
-  // Fallback non crittografico per contesti legacy: mantiene il rilevamento soft di modifiche,
-  // ma non va considerato anti-cheat forte.
+  // Non-cryptographic fallback for legacy contexts: keeps soft tamper detection,
+  // but it must not be considered strong anti-cheat.
   let hash = 2166136261;
   for (let i = 0; i < input.length; i += 1) {
     hash ^= input.charCodeAt(i);
@@ -58,7 +58,7 @@ export async function verifyIntegrity(progress: PlayerProgress): Promise<PlayerP
   return {
     ...progress,
     integrityWarning:
-      'Il salvataggio locale non coincide con la firma di integrità. Potrebbe essere stato modificato fuori dalla app.'
+      'The local save does not match the integrity signature. It may have been changed outside the app.'
   };
 }
 
@@ -86,7 +86,7 @@ export function exportDocument(progress: PlayerProgress): string {
 
 export function parseImport(jsonText: string): PlayerProgress {
   const parsed = JSON.parse(jsonText) as unknown;
-  if (!parsed || typeof parsed !== 'object') throw new Error('File JSON non valido.');
+  if (!parsed || typeof parsed !== 'object') throw new Error('Invalid JSON file.');
 
   const maybeDocument = parsed as Partial<PersistedDocument> & Partial<PlayerProgress>;
   const progress = maybeDocument.progress ?? maybeDocument;

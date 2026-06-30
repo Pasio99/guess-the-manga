@@ -28,14 +28,14 @@ export function StatsScreen({
     <main className="page stats-page">
       <section className="stats-hero glass-card">
         <div>
-          <p className="eyebrow">I tuoi progressi</p>
-          <h2>Statistiche</h2>
+          <p className="eyebrow">Your progress</p>
+          <h2>Stats</h2>
           <p className="muted">
-            Puoi entrare in qualunque livello. Se un livello è in corso, rientri esattamente dove avevi lasciato.
+            You can enter any level. If a level is in progress, you return exactly where you left off.
           </p>
         </div>
         <button className="ghost-button" type="button" onClick={onBack}>
-          Torna al gioco
+          Back to game
         </button>
       </section>
 
@@ -45,28 +45,28 @@ export function StatsScreen({
         </div>
       ) : null}
 
-      <section className="stats-grid" aria-label="Statistiche principali">
-        <StatBox label="Completamento" value={`${stats.completionPct}%`} />
-        <StatBox label="Risolti" value={`${stats.solved}/${stats.total}`} />
-        <StatBox label="Falliti" value={String(stats.failed)} />
-        <StatBox label="In corso" value={String(stats.playing)} />
-        <StatBox label="Tentativi usati" value={String(stats.usedAttempts)} />
-        <StatBox label="Streak iniziale" value={String(stats.streak)} />
+      <section className="stats-grid" aria-label="Main stats">
+        <StatBox label="Completion" value={`${stats.completionPct}%`} />
+        <StatBox label="Solved" value={`${stats.solved}/${stats.total}`} />
+        <StatBox label="Failed" value={String(stats.failed)} />
+        <StatBox label="In progress" value={String(stats.playing)} />
+        <StatBox label="Attempts used" value={String(stats.usedAttempts)} />
+        <StatBox label="Opening streak" value={String(stats.streak)} />
       </section>
 
       <section className="glass-card tools-card">
         <div>
-          <h3>Salvataggio</h3>
+          <h3>Saving</h3>
           <p className="muted">
-            La app usa IndexedDB nel browser. Esporta il JSON se vuoi spostare i progressi su un altro dispositivo.
+            Export the JSON if you want to move your progress to another device.
           </p>
         </div>
         <div className="toolbar">
           <button className="primary-button" type="button" onClick={onExport}>
-            Esporta JSON
+            Export JSON
           </button>
           <button className="ghost-button" type="button" onClick={() => inputRef.current?.click()}>
-            Importa JSON
+            Import JSON
           </button>
           <button className="danger-button" type="button" onClick={onReset}>
             Reset
@@ -85,7 +85,7 @@ export function StatsScreen({
         </div>
       </section>
 
-      <section className="history-list" aria-label="Lista livelli">
+      <section className="history-list" aria-label="Level list">
         {levels.map((level, index) => {
           const levelProgress = progress.levels[level.id] ?? createEmptyLevelProgress();
           return (
@@ -96,13 +96,13 @@ export function StatsScreen({
               onClick={() => onSelectLevel(level.id)}
             >
               <span className="history-main">
-                <strong>Livello {index + 1}</strong>
+                <strong>Level {index + 1}</strong>
                 <small>{labelForStatus(levelProgress.status)}</small>
               </span>
               <span className="history-meta">
                 {levelProgress.status === 'playing'
-                  ? `Usati ${levelProgress.attemptsUsed}/4 · Immagine ${levelProgress.currentPanelIndex + 1}`
-                  : `Tentativi ${levelProgress.attemptsUsed}/4`}
+                  ? `Used ${levelProgress.attemptsUsed}/4 · Image ${levelProgress.currentPanelIndex + 1}`
+                  : `Attempts ${levelProgress.attemptsUsed}/4`}
               </span>
             </button>
           );
@@ -124,12 +124,12 @@ function StatBox({ label, value }: { label: string; value: string }) {
 function labelForStatus(status: string) {
   switch (status) {
     case 'solved':
-      return 'Risolto';
+      return 'Solved';
     case 'failed':
-      return 'Concluso senza soluzione';
+      return 'Finished without solving';
     case 'playing':
-      return 'In corso';
+      return 'In progress';
     default:
-      return 'Non iniziato';
+      return 'Not started';
   }
 }

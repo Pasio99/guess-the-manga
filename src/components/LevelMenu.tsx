@@ -17,22 +17,22 @@ export function LevelMenu({ open, levels, progress, activeLevelId, onSelectLevel
   const stats = calculateStats(progress);
 
   return (
-    <aside className="sheet" role="dialog" aria-modal="true" aria-label="Menu livelli">
-      <button className="sheet-backdrop" type="button" aria-label="Chiudi menu livelli" onClick={onClose} />
+    <aside className="sheet" role="dialog" aria-modal="true" aria-label="Level menu">
+      <button className="sheet-backdrop" type="button" aria-label="Close level menu" onClick={onClose} />
       <div className="sheet-panel">
         <div className="sheet-header">
           <div>
-            <p className="eyebrow">Scegli liberamente</p>
-            <h2>Livelli</h2>
+            <p className="eyebrow">Choose freely</p>
+            <h2>Levels</h2>
           </div>
-          <button className="icon-button" type="button" onClick={onClose} aria-label="Chiudi">
+          <button className="icon-button" type="button" onClick={onClose} aria-label="Close">
             ✕
           </button>
         </div>
 
-        <div className="mini-stats" aria-label="Riepilogo progressi">
-          <span>{stats.solved}/{stats.total} risolti</span>
-          <span>{stats.usedAttempts} tentativi usati</span>
+        <div className="mini-stats" aria-label="Progress summary">
+          <span>{stats.solved}/{stats.total} solved</span>
+          <span>{stats.usedAttempts} attempts used</span>
           <span>{stats.completionPct}%</span>
         </div>
 
@@ -63,12 +63,12 @@ export function LevelMenu({ open, levels, progress, activeLevelId, onSelectLevel
 function labelForStatus(status: string) {
   switch (status) {
     case 'solved':
-      return 'Risolto';
+      return 'Solved';
     case 'failed':
-      return 'Finito';
+      return 'Finished';
     case 'playing':
-      return 'In corso';
+      return 'In progress';
     default:
-      return 'Nuovo';
+      return 'New';
   }
 }
