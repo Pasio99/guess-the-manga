@@ -39,13 +39,13 @@ export function GameScreen({
   const statusLabel = useMemo(() => {
     switch (progress.status) {
       case 'solved':
-        return 'Risolto';
+        return 'Solved';
       case 'failed':
-        return 'Concluso';
+        return 'Finished';
       case 'playing':
-        return 'In gioco';
+        return 'Playing';
       default:
-        return 'Nuovo';
+        return 'New';
     }
   }, [progress.status]);
 
@@ -54,23 +54,23 @@ export function GameScreen({
       <section className="game-shell glass-card">
         <div className="game-topline">
           <div>
-            <p className="eyebrow">Livello {levelIndex + 1}</p>
+            <p className="eyebrow">Level {levelIndex + 1}</p>
             <h2>{level.title}</h2>
           </div>
           <button className="ghost-button compact" type="button" onClick={onOpenLevels}>
-            Cambia livello
+            Change level
           </button>
         </div>
 
         <div className="status-strip">
           <span className={`status-pill ${progress.status}`}>{statusLabel}</span>
           <AttemptDots used={progress.attemptsUsed} status={progress.status} />
-          <span className="panel-counter">Immagine {progress.currentPanelIndex + 1}/4</span>
+          <span className="panel-counter">Image {progress.currentPanelIndex + 1}/4</span>
         </div>
 
         <div className="panel-stage">
-          <button className="image-button" type="button" onClick={() => setModalOpen(true)} aria-label="Ingrandisci immagine">
-            <img src={currentPanel.src} alt={`Pannello del livello ${levelIndex + 1}, immagine ${progress.currentPanelIndex + 1}`} />
+          <button className="image-button" type="button" onClick={() => setModalOpen(true)} aria-label="Enlarge image">
+            <img src={currentPanel.src} alt={`Level ${levelIndex + 1} panel, image ${progress.currentPanelIndex + 1}`} />
           </button>
           {progress.hintVisible ? <div className="hint-overlay">{currentPanel.hint}</div> : null}
         </div>
@@ -88,7 +88,7 @@ export function GameScreen({
           </p>
         ) : (
           <p className="result-message muted" role="status">
-            Ogni invio, anche vuoto, consuma un tentativo reale.
+            Every submission counts as an attempt.
           </p>
         )}
 
@@ -104,12 +104,12 @@ export function GameScreen({
             value={guess}
             disabled={submitDisabled}
             onChange={(event) => setGuess(event.target.value)}
-            placeholder={isFinished ? 'Livello concluso' : 'Scrivi la risposta o invia vuoto per passare'}
+            placeholder={isFinished ? 'Level finished' : 'Write your answer here'}
             autoComplete="off"
             inputMode="text"
           />
           <button className="primary-button" type="submit" disabled={submitDisabled}>
-            Invia
+            Submit
           </button>
         </form>
 
@@ -117,17 +117,17 @@ export function GameScreen({
           {canRevealControls ? (
             <>
               <button className="ghost-button" type="button" disabled={!canGoPrevious} onClick={() => onPanelChange(progress.currentPanelIndex - 1)}>
-                ← Precedente
+                ← Previous
               </button>
               <button className="ghost-button" type="button" onClick={onToggleHint}>
-                {progress.hintVisible ? 'Nascondi indizio' : 'Mostra indizio'}
+                {progress.hintVisible ? 'Hide hint' : 'Show hint'}
               </button>
               <button className="ghost-button" type="button" disabled={!canGoNext} onClick={() => onPanelChange(progress.currentPanelIndex + 1)}>
-                Successiva →
+                Next →
               </button>
             </>
           ) : (
-            <p className="muted controls-note">Gli indizi e la navigazione fra immagini si sbloccano dopo il primo tentativo.</p>
+            <p className="muted controls-note">After your first attempt, hints will become available.</p>
           )}
         </div>
       </section>
@@ -135,7 +135,7 @@ export function GameScreen({
       {modalOpen ? (
         <ImageModal
           src={currentPanel.src}
-          alt={`Pannello ingrandito del livello ${levelIndex + 1}`}
+          alt={`Enlarged panel for level ${levelIndex + 1}`}
           onClose={() => setModalOpen(false)}
         />
       ) : null}

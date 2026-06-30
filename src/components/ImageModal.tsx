@@ -20,10 +20,10 @@ export function ImageModal({ src, alt, onClose }: ImageModalProps) {
   }, [onClose]);
 
   return (
-    <div className="image-modal" role="dialog" aria-modal="true" aria-label="Immagine ingrandita">
-      <button className="modal-backdrop" type="button" aria-label="Chiudi immagine" onClick={onClose} />
+    <div className="image-modal" role="dialog" aria-modal="true" aria-label="Enlarged image">
+      <button className="modal-backdrop" type="button" aria-label="Close image" onClick={onClose} />
       <div className="image-modal-card">
-        <button className="modal-close" type="button" onClick={onClose} aria-label="Chiudi">
+        <button className="modal-close" type="button" onClick={onClose} aria-label="Close">
           ✕
         </button>
         <img src={src} alt={alt} />
