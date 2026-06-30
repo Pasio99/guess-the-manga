@@ -427,7 +427,7 @@ h3 {
 .primary-button {
   padding: 0.75rem 1rem;
   background: linear-gradient(135deg, var(--purple-primary), var(--purple-deep));
-  box-shadow: none;
+  box-shadow: 0 16px 34px rgba(124,60,255,0.36), 0 0 28px rgba(179,136,255,0.16);
 }
 
 .ghost-button {
@@ -466,7 +466,7 @@ h3 {
 
 .primary-button:not(:disabled):hover {
   background: linear-gradient(135deg, var(--purple-hover), var(--purple-primary));
-  box-shadow: none;
+  box-shadow: 0 18px 38px rgba(148,99,255,0.4), 0 0 32px rgba(179,136,255,0.2);
 }
 
 .primary-button:not(:disabled):active,
