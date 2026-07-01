@@ -339,11 +339,17 @@ h3 {
   max-width: min(88%, 38rem);
   padding: 0.78rem 0.9rem;
   border-radius: 1rem;
-  background: rgba(255, 178, 56, 0.2);
-  border: 1px solid rgba(255, 178, 56, 0.42);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.38), 0 0 28px rgba(255,178,56,0.14);
-  color: var(--text-primary);
+  background: rgba(26, 11, 51, 0.78);
+  border: 1px solid rgba(148, 99, 255, 0.64);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.42);
+  color: var(--white);
   font-weight: 750;
+  text-shadow:
+    -1px -1px 0 rgba(0,0,0,0.72),
+    1px -1px 0 rgba(0,0,0,0.72),
+    -1px 1px 0 rgba(0,0,0,0.72),
+    1px 1px 0 rgba(0,0,0,0.72),
+    0 2px 4px rgba(0,0,0,0.9);
   backdrop-filter: blur(10px);
 }
 
@@ -364,7 +370,7 @@ h3 {
 .progress-rail span {
   inset-inline-start: 0;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--purple-primary), var(--accent-reward));
+  background: linear-gradient(90deg, var(--purple-primary), #2778ff);
   transition: inline-size 240ms ease;
 }
 
@@ -427,7 +433,7 @@ h3 {
 .primary-button {
   padding: 0.75rem 1rem;
   background: linear-gradient(135deg, var(--purple-primary), var(--purple-deep));
-  box-shadow: 0 16px 34px rgba(124,60,255,0.36), 0 0 28px rgba(179,136,255,0.16);
+  box-shadow: none;
 }
 
 .ghost-button {
@@ -466,7 +472,7 @@ h3 {
 
 .primary-button:not(:disabled):hover {
   background: linear-gradient(135deg, var(--purple-hover), var(--purple-primary));
-  box-shadow: 0 18px 38px rgba(148,99,255,0.4), 0 0 32px rgba(179,136,255,0.2);
+  box-shadow: none;
 }
 
 .primary-button:not(:disabled):active,
